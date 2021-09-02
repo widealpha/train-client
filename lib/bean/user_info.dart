@@ -14,6 +14,8 @@ class UserInfo {
   String? address;
   int? selfPassengerId;
 
+
+
   UserInfo(
       {this.userId,
       this.gender,

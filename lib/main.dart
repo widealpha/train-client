@@ -3,10 +3,11 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:train/ui/main_page.dart';
 import 'package:train/util/hive_util.dart';
 
 void main() async {
-  await Hive.initFlutter();
+  await Hive.initFlutter('train_db');
   await HiveUtils.init();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
         child = botToastBuilder(context, child);
         return child;
       },
-      home: MyHomePage(title: '火车购票程序'),
+      home: MainPage(),
     );
   }
 }

@@ -1,0 +1,37 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'ticket.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+Ticket _$TicketFromJson(Map<String, dynamic> json) {
+  return Ticket(
+    ticketId: json['ticketId'] as num?,
+    coachId: json['coachId'] as num?,
+    stationTrainCode: json['stationTrainCode'] as String?,
+    startStationTelecode: json['startStationTelecode'] as String?,
+    endStationTelecode: json['endStationTelecode'] as String?,
+    startTime: json['startTime'] as String?,
+    endTime: json['endTime'] as String?,
+    price: json['price'] as num?,
+    passengerId: json['passengerId'] as num?,
+    orderId: json['orderId'] as num?,
+    student: json['student'] as bool?,
+  );
+}
+
+Map<String, dynamic> _$TicketToJson(Ticket instance) => <String, dynamic>{
+      'ticketId': instance.ticketId,
+      'coachId': instance.coachId,
+      'stationTrainCode': instance.stationTrainCode,
+      'startStationTelecode': instance.startStationTelecode,
+      'endStationTelecode': instance.endStationTelecode,
+      'startTime': instance.startTime,
+      'endTime': instance.endTime,
+      'price': instance.price,
+      'passengerId': instance.passengerId,
+      'orderId': instance.orderId,
+      'student': instance.student,
+    };

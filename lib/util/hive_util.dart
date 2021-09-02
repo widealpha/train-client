@@ -1,17 +1,25 @@
 import 'package:hive_flutter/adapters.dart';
 
 class HiveUtils {
-  static late Box<String> _box;
+  static late Box _box;
 
   static Future<void> init() async {
-    _box = await Hive.openBox<String>('user');
+    _box = await Hive.openBox('user');
   }
 
-  static set(String key, String value) {
+  static set(String key, dynamic value) {
     _box.put(key, value);
   }
 
   static get(String key) {
     return _box.get(key);
+  }
+
+  static remove(String key) {
+    return _box.delete(key);
+  }
+
+  static removeAll() {
+    return _box.deleteAll(_box.keys);
   }
 }
