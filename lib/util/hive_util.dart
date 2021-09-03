@@ -7,8 +7,8 @@ class HiveUtils {
     _box = await Hive.openBox('user');
   }
 
-  static set(String key, dynamic value) {
-    _box.put(key, value);
+  static Future<void> set(String key, dynamic value) {
+    return _box.put(key, value);
   }
 
   static get(String key) {

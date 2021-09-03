@@ -19,19 +19,35 @@ Train _$TrainFromJson(Map<String, dynamic> json) {
     seatTypes: json['seatTypes'] as String?,
     startDate: json['startDate'] as String?,
     stopDate: json['stopDate'] as String?,
-  );
+  )
+    ..startStation = json['startStation'] == null
+        ? null
+        : Station.fromJson(json['startStation'] as Map<String, dynamic>)
+    ..endStation = json['endStation'] == null
+        ? null
+        : Station.fromJson(json['endStation'] as Map<String, dynamic>)
+    ..tranClass = json['tranClass'] == null
+        ? null
+        : TrainClass.fromJson(json['tranClass'] as Map<String, dynamic>)
+    ..seatType = json['seatType'] == null
+        ? null
+        : SeatType.fromJson(json['seatType'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$TrainToJson(Train instance) => <String, dynamic>{
       'trainNo': instance.trainNo,
       'stationTrainCode': instance.stationTrainCode,
       'startStationTelecode': instance.startStationTelecode,
+      'startStation': instance.startStation,
       'startStartTime': instance.startStartTime,
       'endStationTelecode': instance.endStationTelecode,
+      'endStation': instance.endStation,
       'endArriveTime': instance.endArriveTime,
       'trainTypeCode': instance.trainTypeCode,
       'trainClassCode': instance.trainClassCode,
+      'tranClass': instance.tranClass,
       'seatTypes': instance.seatTypes,
+      'seatType': instance.seatType,
       'startDate': instance.startDate,
       'stopDate': instance.stopDate,
     };

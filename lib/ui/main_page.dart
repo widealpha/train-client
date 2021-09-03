@@ -3,6 +3,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:train/api/api.dart';
+import 'package:train/util/constance.dart';
 
 import 'login.dart';
 
@@ -34,15 +35,15 @@ class _MainPageState extends State<MainPage> {
               decoration: BoxDecoration(
                 color: Colors.lightBlueAccent,
               ),
-              child: UserApi.isLogin()
+              child: UserApi.isLogin
                   ? GestureDetector(
                       child: Column(
                         children: [
                           Expanded(
                             child: Center(
                               child: SizedBox(
-                                width: 100.0,
-                                height: 100.0,
+                                width: Constants.iconSize,
+                                height: Constants.iconSize,
                                 child: ClipOval(
                                   child: ExtendedImage.network(UserApi
                                           .userInfo.headImage ??
@@ -88,12 +89,12 @@ class _MainPageState extends State<MainPage> {
                           Expanded(
                             child: Center(
                               child: SizedBox(
-                                width: 100.0,
-                                height: 100.0,
+                                width: Constants.iconSize,
+                                height: Constants.iconSize,
                                 child: ClipOval(
                                   child: Icon(
                                     Icons.account_circle_rounded,
-                                    size: 100,
+                                    size: Constants.iconSize,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -112,13 +113,27 @@ class _MainPageState extends State<MainPage> {
                       },
                     ),
             ),
-          ],
+            ListTile(
+              title: Text('设置'),
+              leading: Icon(Icons.settings),
+            )
+          ]..add(UserApi.isLogin
+              ? ListTile(
+                  leading: Icon(Icons.exit_to_app_rounded),
+                  title: Text('切换账户'),
+                  onTap: () {
+                    UserApi.logout();
+                    Get.to(() => LoginPage());
+                  })
+              : Container()),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar( // 底部导航
+      bottomNavigationBar: BottomNavigationBar(
+        // 底部导航
         items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: '售票'),
-          BottomNavigationBarItem(icon: Icon(Icons.business), label: '订单'),
+          BottomNavigationBarItem(icon: Icon(Icons.train_rounded), label: '售票'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.airplane_ticket_rounded), label: '订单'),
           BottomNavigationBarItem(icon: Icon(Icons.school), label: '个人中心'),
         ],
         currentIndex: _selectedIndex,
@@ -128,7 +143,11 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  _onItemTapped(int index){
+  Widget _buildBody() {
+    return Container();
+  }
+
+  _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });

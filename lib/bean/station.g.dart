@@ -8,10 +8,10 @@ part of 'station.dart';
 
 Station _$StationFromJson(Map<String, dynamic> json) {
   return Station(
-    name: json['name'] as String?,
-    telecode: json['telecode'] as String?,
-    en: json['en'] as String?,
-    abbr: json['abbr'] as String?,
+    name: json['name'] as String,
+    telecode: json['telecode'] as String,
+    en: json['en'] as String,
+    abbr: json['abbr'] as String,
   );
 }
 
