@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:train/bean/seat_type.dart';
 import 'package:train/bean/station.dart';
 import 'package:train/bean/train_class.dart';
+import 'package:train/bean/train_station.dart';
 
 part 'train.g.dart';
 
@@ -22,19 +23,30 @@ class Train {
   SeatType? seatType;
   String? startDate;
   String? stopDate;
+  List<TrainStation>? trainStations;
+  String? nowStartStationTelecode;
+  String? nowEndStationTelecode;
+
 
   Train(
       {this.trainNo,
       this.stationTrainCode,
       this.startStationTelecode,
+      this.startStation,
       this.startStartTime,
       this.endStationTelecode,
+      this.endStation,
       this.endArriveTime,
       this.trainTypeCode,
       this.trainClassCode,
+      this.tranClass,
       this.seatTypes,
+      this.seatType,
       this.startDate,
-      this.stopDate});
+      this.stopDate,
+      this.trainStations,
+      this.nowStartStationTelecode,
+      this.nowEndStationTelecode});
 
   factory Train.fromJson(Map<String, dynamic> json) => _$TrainFromJson(json);
 

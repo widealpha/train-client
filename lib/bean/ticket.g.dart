@@ -16,7 +16,9 @@ Ticket _$TicketFromJson(Map<String, dynamic> json) {
     startStation: json['startStation'] == null
         ? null
         : Station.fromJson(json['startStation'] as Map<String, dynamic>),
-    endStation: json['endStation'] as String?,
+    endStation: json['endStation'] == null
+        ? null
+        : Station.fromJson(json['endStation'] as Map<String, dynamic>),
     startTime: json['startTime'] as String?,
     endTime: json['endTime'] as String?,
     price: json['price'] as num?,

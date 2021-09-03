@@ -11,7 +11,7 @@ class Ticket {
   String? startStationTelecode;
   String? endStationTelecode;
   Station? startStation;
-  String? endStation;
+  Station? endStation;
   String? startTime;
   String? endTime;
   num? price;

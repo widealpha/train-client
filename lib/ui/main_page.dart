@@ -3,6 +3,9 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:train/api/api.dart';
+import 'package:train/bean/station.dart';
+import 'package:train/ui/station_page.dart';
+import 'package:train/ui/train_page.dart';
 import 'package:train/util/constance.dart';
 
 import 'login.dart';
@@ -16,10 +19,12 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+  List<Widget> _pages = [];
 
   @override
   void initState() {
     super.initState();
+    _buildPage();
   }
 
   @override
@@ -128,6 +133,10 @@ class _MainPageState extends State<MainPage> {
               : Container()),
         ),
       ),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         // 底部导航
         items: <BottomNavigationBarItem>[
@@ -143,8 +152,30 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _buildBody() {
-    return Container();
+  Widget _buildPage() {
+    if (_pages.isEmpty) {
+      _pages.add(TrainPage());
+      _pages.add(Container(
+        child: TextButton(
+          child: Text('省份选择'),
+          onPressed: () async {
+            Station? s = await Get.to(() => StationPage());
+            print(s);
+          },
+        ),
+      ));
+      _pages.add(Container(
+        child: TextButton(
+          child: Text('省份选择'),
+          onPressed: () async {
+            Station? s = await Get.to(() => StationPage());
+            print(s);
+          },
+        ),
+      ));
+    }
+
+    return _pages[_selectedIndex];
   }
 
   _onItemTapped(int index) {

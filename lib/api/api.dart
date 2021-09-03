@@ -14,7 +14,8 @@ import 'package:train/bean/train_station.dart';
 import 'package:train/bean/user_info.dart';
 import 'package:train/util/hive_util.dart';
 
-final String host = 'https://widealpha.top:8443/train';
+// final String host = 'https://widealpha.top:8443/train';
+final String host = 'http://localhost:8080';
 
 class Connection {
   static Dio? _dio;
@@ -226,6 +227,17 @@ class StationApi {
       return _stationCache;
     }
     return _stationCache;
+  }
+
+  static Station? cachedStationInfo(String stationTelecode){
+    if (_stationCache.isNotEmpty) {
+      for (Station value in _stationCache) {
+        if (value.telecode == stationTelecode) {
+          return value;
+        }
+      }
+    }
+    return null;
   }
 
   static Future<Station?> stationInfo(String stationTelecode) async {
