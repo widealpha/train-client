@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:train/api/api.dart';
 import 'package:train/bean/coach.dart';
 import 'package:train/bean/order.dart';
@@ -198,8 +200,14 @@ class _PayOrderPageState extends State<PayOrderPage> {
                                 if (s != null) {
                                   Get.showOverlay(
                                       asyncFunction: () async {
-                                        while (true){
-                                          if (await OrderFormApi.orderFormStatus(widget.order.orderId!) == 1){
+                                        while (true) {
+                                          if (await OrderFormApi
+                                                  .orderFormStatus(
+                                                      widget.order.orderId!) ==
+                                              1) {
+                                            BotToast.showText(text: '支付成功');
+                                            Get.back();
+                                            Get.back();
                                             break;
                                           }
                                         }
@@ -208,7 +216,7 @@ class _PayOrderPageState extends State<PayOrderPage> {
                                         child: Container(
                                           padding: EdgeInsets.all(8),
                                           alignment: Alignment.center,
-                                          child: Image.network(s),
+                                          child: QrImage(data: s),
                                         ),
                                       ));
                                 }
@@ -319,30 +327,36 @@ class _NeedToPayPageState extends State<NeedToPayPage> {
         centerTitle: true,
         title: Text('未完成'),
       ),
-      body: loading
-          ? Center(child: CircularProgressIndicator())
-          : orders.isEmpty
-              ? Center(
-                  child: Text(
-                    '还没有待支付订单哦',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                )
-              : ListView(
-                  children: orders
-                      .map((e) => OrderCard(
-                            order: e,
-                            f: fetchData,
-                          ))
-                      .toList()),
+      body: buildBody(),
     );
+  }
+
+  Widget buildBody() {
+    if (loading) {
+      return Center(child: CircularProgressIndicator());
+    } else if (orders.isEmpty) {
+      return Center(
+          child: Text('还没有待支付订单哦', style: TextStyle(color: Colors.grey)));
+    } else {
+      return ListView.separated(
+        itemBuilder: (c, i) {
+          return OrderCard(
+            order: orders[i],
+            f: fetchData,
+          );
+        },
+        itemCount: orders.length,
+        separatorBuilder: (_, __) => Divider(),
+      );
+    }
   }
 
   void fetchData() async {
     loading = true;
     setState(() {});
-    orders = await OrderFormApi.allMyOrders();
-    orders.removeWhere((o) => o.payed != 0);
+    List<Order> l = await OrderFormApi.allMyOrders();
+    orders.clear();
+    orders.addAll(l.where((o) => o.payed == 0));
     loading = false;
     setState(() {});
   }

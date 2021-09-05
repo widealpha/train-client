@@ -94,6 +94,8 @@ class UserApi {
         await Connection.dio.post(_userInfo, options: Connection.options);
     if (response.data['code'] == 0) {
       return UserInfo.fromJson(response.data['data']);
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return userInfo;
   }
@@ -115,6 +117,8 @@ class TrainApi {
         options: Connection.options);
     if (response.data['code'] == 0) {
       return Train.fromJson(response.data['data']);
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return null;
   }
@@ -138,6 +142,8 @@ class TrainApi {
       }
       pager.totalPage = pager.totalSize ~/ pager.size + 1;
       return pager;
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return Pager(0, 0, 0, 0, []);
   }
@@ -153,6 +159,8 @@ class TrainApi {
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => Train.fromJson(e)).toList();
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return [];
   }
@@ -168,6 +176,8 @@ class TrainApi {
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => ChangeTrain.fromJson(e)).toList();
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return [];
   }
@@ -184,6 +194,8 @@ class TrainApi {
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => TrainPrice.fromJson(e)).toList();
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return [];
   }
@@ -204,6 +216,8 @@ class TrainApi {
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => RemainSeat.fromJson(e)).toList();
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return [];
   }
@@ -216,6 +230,8 @@ class TrainApi {
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => TrainStation.fromJson(e)).toList();
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return [];
   }
@@ -237,6 +253,8 @@ class StationApi {
       List l = response.data['data'];
       _stationCache = l.map((e) => Station.fromJson(e)).toList();
       return _stationCache;
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return _stationCache;
   }
@@ -264,6 +282,8 @@ class StationApi {
         await Connection.dio.post(_stationInfo, options: Connection.options);
     if (response.data['code'] == 0) {
       return Station.fromJson(response.data['data']);
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return null;
   }
@@ -278,6 +298,8 @@ class SeatTypeApi {
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => SeatType.fromJson(e)).toList();
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return [];
   }
@@ -292,6 +314,8 @@ class TrainClassApi {
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => TrainClass.fromJson(e)).toList();
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return [];
   }
@@ -312,6 +336,8 @@ class TicketApi {
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => Ticket.fromJson(e)).toList();
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return [];
   }
@@ -347,6 +373,8 @@ class TicketApi {
         options: Connection.options, queryParameters: {'ticketId': ticketId});
     if (response.data['code'] == 0) {
       return response.data['data'];
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return false;
   }
@@ -356,6 +384,8 @@ class TicketApi {
         options: Connection.options, queryParameters: {'ticketId': ticketId});
     if (response.data['code'] == 0) {
       return response.data['data'];
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return null;
   }
@@ -366,6 +396,8 @@ class TicketApi {
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => Ticket.fromJson(e)).toList();
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return [];
   }
@@ -392,6 +424,8 @@ class OrderFormApi {
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => Order.fromJson(e)).toList();
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return [];
   }
@@ -401,6 +435,8 @@ class OrderFormApi {
         options: Connection.options, data: jsonEncode(ticketId));
     if (response.data['code'] == 0) {
       return Order.fromJson(response.data['data']);
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return null;
   }
@@ -410,6 +446,8 @@ class OrderFormApi {
         options: Connection.options, queryParameters: {'orderId': orderId});
     if (response.data['code'] == 0) {
       return response.data['data'];
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return null;
   }
@@ -419,14 +457,19 @@ class OrderFormApi {
         options: Connection.options, queryParameters: {'orderId': orderId});
     if (response.data['code'] == 0) {
       return response.data['data'];
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return -1;
   }
+
   static Future<bool> cancelOrderForm(num orderId) async {
     Response response = await Connection.dio.post(_cancelOrderForm,
         options: Connection.options, queryParameters: {'orderId': orderId});
     if (response.data['code'] == 0) {
       return response.data['data'];
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return false;
   }
@@ -440,6 +483,8 @@ class SystemApi {
         await Connection.dio.post(_systemSetting, options: Connection.options);
     if (response.data['code'] == 0) {
       return SystemSetting.fromJson(response.data['data']);
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return null;
   }
@@ -456,6 +501,8 @@ class PassengerApi {
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => Passenger.fromJson(e)).toList();
+    } else {
+      BotToast.showText(text: response.data['message']);
     }
     return [];
   }
@@ -474,7 +521,12 @@ class PassengerApi {
   static Future<bool> removePassenger(int passengerId) async {
     Response response = await Connection.dio
         .post(_removePassenger, options: Connection.options);
-    return response.data['code'] == 0;
+    if (response.data['code'] == 0) {
+      return true;
+    } else {
+      BotToast.showText(text: response.data['message']);
+    }
+    return false;
   }
 }
 
