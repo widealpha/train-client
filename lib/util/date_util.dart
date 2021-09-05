@@ -22,7 +22,8 @@ class DateUtil {
     minute = minute.abs();
     String s = '${minute ~/ 60}小时';
     if (minute % 60 != 0) {
-      s += '${minute % 60}分钟';
+      s +=
+          '${minute % 60 < 10 ? '0' + (minute % 60).toString() : minute % 60}分钟';
     }
     return s;
   }

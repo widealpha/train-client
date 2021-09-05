@@ -18,7 +18,7 @@ class Ticket {
   num? passengerId;
   num? orderId;
   bool? student;
-  String? seat;
+  num? seat;
   @JsonKey(ignore: true)
   String? startStationName;
   @JsonKey(ignore: true)

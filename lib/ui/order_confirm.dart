@@ -143,7 +143,7 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
                   child: Column(
                     children: [
                       Text(
-                        ticket.startStation!.name,
+                        StationApi.cachedStationInfo(widget.train.nowStartStationTelecode!)!.name,
                         style: TextStyle(fontSize: 18),
                       ),
                       Padding(padding: EdgeInsets.all(2)),
@@ -186,7 +186,7 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
                   child: Column(
                     children: [
                       Text(
-                        ticket.endStation!.name,
+                        StationApi.cachedStationInfo(widget.train.nowEndStationTelecode!)!.name,
                         style: TextStyle(fontSize: 18),
                       ),
                       Padding(padding: EdgeInsets.all(2)),
@@ -289,8 +289,8 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
                         child: Column(
                           children: passengers
                               .map((e) => Container(
-                            padding: EdgeInsets.all(8),
-                            alignment: Alignment.center,
+                                    padding: EdgeInsets.all(8),
+                                    alignment: Alignment.center,
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -306,7 +306,9 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
                                                   alignment: Alignment.center,
                                                   decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
-                                                    color: passengerChooseSeat[e] == c
+                                                    color: passengerChooseSeat[
+                                                                e] ==
+                                                            c
                                                         ? Colors.blue
                                                         : Colors.grey,
                                                   ),
@@ -315,8 +317,10 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
                                                           color: Colors.white)),
                                                 ),
                                                 onTap: () {
-                                                  if (passengerChooseSeat[e] == c){
-                                                    passengerChooseSeat.remove(e);
+                                                  if (passengerChooseSeat[e] ==
+                                                      c) {
+                                                    passengerChooseSeat
+                                                        .remove(e);
                                                   } else {
                                                     passengerChooseSeat[e] = c;
                                                   }
@@ -341,18 +345,27 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
                     Get.showOverlay(
                         asyncFunction: () async {
                           List<int> ticketIds = [];
-                          for (Passenger p in passengers){
-                            int? ticketId = await TicketApi.buyTicket(ticket.startStationTelecode!, ticket.endStationTelecode!, widget.train.stationTrainCode!, trainPriceList[choose].seatTypeCode, p.passengerId!, p.student!, _date.toIso8601String().substring(0,10));
-                            if (ticketId == null){
-                              BotToast.showText(text: '${p.name}购票失败');
+                          for (Passenger p in passengers) {
+                            int? ticketId = await TicketApi.buyTicket(
+                                widget.train.nowStartStationTelecode!,
+                                widget.train.nowEndStationTelecode!,
+                                widget.train.stationTrainCode!,
+                                trainPriceList[choose].seatTypeCode,
+                                p.passengerId!,
+                                p.student!,
+                                _date.toIso8601String().substring(0, 10));
+                            if (ticketId == null) {
+                              // BotToast.showText(text: '${p.name}购票失败');
                               return;
                             } else {
                               ticketIds.add(ticketId);
                             }
                           }
-                          if (ticketIds.isNotEmpty){
-                            Order? order = await OrderFormApi.addOrder(ticketIds);
-                            Get.to(()=> PayOrderPage(order: order!));
+                          if (ticketIds.isNotEmpty) {
+                            Order? order =
+                                await OrderFormApi.addOrder(ticketIds);
+                            Get.to(() => PayOrderPage(order: order!))
+                                ?.then((value) => Get.back());
                           } else {
                             BotToast.showText(text: '订单生成失败,请稍后重试');
                           }

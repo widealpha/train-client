@@ -43,20 +43,25 @@ class UserApi {
   static bool get isLogin => HiveUtils.get('token') != null;
 
   static Future<String> login(username, password) async {
-    Response response = await Connection.dio.post(_login,
-        queryParameters: {'username': username, 'password': password});
-    if (response.statusCode == 200 && response.data['code'] == 0) {
-      await HiveUtils.set('token', response.data['data']);
-      response =
-          await Connection.dio.post(_userInfo, options: Connection.options);
-      UserInfo userInfo = UserInfo.fromJson(response.data['data']);
-      HiveUtils.set('user_id', userInfo.userId);
-      HiveUtils.set('head_image', userInfo.headImage);
-      HiveUtils.set('nickname', userInfo.nickname);
-      Get.forceAppUpdate();
-      return '登录成功';
-    } else {
-      return response.data['message'];
+    try {
+      Response response = await Connection.dio.post(_login,
+          queryParameters: {'username': username, 'password': password});
+      if (response.statusCode == 200 && response.data['code'] == 0) {
+        await HiveUtils.set('token', response.data['data']);
+        response =
+        await Connection.dio.post(_userInfo, options: Connection.options);
+        UserInfo userInfo = UserInfo.fromJson(response.data['data']);
+        HiveUtils.set('user_id', userInfo.userId);
+        HiveUtils.set('head_image', userInfo.headImage);
+        HiveUtils.set('nickname', userInfo.nickname);
+        Get.forceAppUpdate();
+        StationApi.allStations();
+        return '登录成功';
+      } else {
+        return response.data['message'];
+      }
+    } catch (e){
+      return '用户名或密码错误';
     }
   }
 
@@ -323,7 +328,9 @@ class TrainClassApi {
 
 class TicketApi {
   static String _allMyTickets = host + "/ticket/userTickets";
+  static String _allSelfTickets = host + "/ticket/selfTickets";
   static String _buyTicket = host + "/ticket/buyTicket";
+  static String _changeTicket = host + "/ticket/changeTicket";
   static String _cancelTicket = host + "/ticket/cancelTicket";
   static String _ticketInfo = host + "/ticket/ticketInfo";
   static String _ticketInfoByOrder = host + "/ticket/ticketInfoByOrder";
@@ -341,6 +348,19 @@ class TicketApi {
     }
     return [];
   }
+
+  static Future<List<Ticket>> allSelfTicket() async {
+    Response response =
+    await Connection.dio.post(_allSelfTickets, options: Connection.options);
+    if (response.data['code'] == 0) {
+      List l = response.data['data'];
+      return l.map((e) => Ticket.fromJson(e)).toList();
+    } else {
+      BotToast.showText(text: response.data['message']);
+    }
+    return [];
+  }
+
 
   static Future<int?> buyTicket(
       String startStationTelecode,
@@ -408,6 +428,18 @@ class TicketApi {
         options: Connection.options,
         queryParameters: {'bigInteger': bigInteger, 'seatName': seatName});
     return response.data['data'] ?? '';
+  }
+
+  static Future<Order?> changeTicket(num ticketId, String stationTrainCode) async {
+    Response response = await Connection.dio.post(_changeTicket,
+        options: Connection.options,
+        queryParameters: {'ticketId': ticketId, 'stationTrainCode': stationTrainCode});
+    if (response.data['code'] == 0){
+      return Order.fromJson(response.data['data']);
+    } else {
+      BotToast.showText(text: response.data['message']);
+      return null;
+    }
   }
 }
 

@@ -6,6 +6,7 @@ import 'package:train/ui/add_passenger.dart';
 
 class ChoosePassengerPage extends StatefulWidget {
   final List<Passenger> choose;
+
   const ChoosePassengerPage({Key? key, required this.choose}) : super(key: key);
 
   @override
@@ -14,6 +15,7 @@ class ChoosePassengerPage extends StatefulWidget {
 
 class _ChoosePassengerPageState extends State<ChoosePassengerPage> {
   Map<Passenger, bool> allPassengers = {};
+  bool loading = true;
 
   @override
   void initState() {
@@ -32,10 +34,13 @@ class _ChoosePassengerPageState extends State<ChoosePassengerPage> {
               onPressed: () {
                 Get.back(
                     result: allPassengers.keys
-                        .takeWhile((p) => allPassengers[p]!)
+                        .where((p) => allPassengers[p]!)
                         .toList());
               },
-              child: Text('完成', style: TextStyle(color: Colors.white),))
+              child: Text(
+                '完成',
+                style: TextStyle(color: Colors.white),
+              ))
         ],
       ),
       body: ListView(
@@ -54,7 +59,7 @@ class _ChoosePassengerPageState extends State<ChoosePassengerPage> {
               ),
               onTap: () async {
                 Passenger? passenger = await Get.to(() => AddPassengerPage());
-                if (passenger != null){
+                if (passenger != null) {
                   allPassengers[passenger] = false;
                 }
                 setState(() {});
@@ -64,44 +69,49 @@ class _ChoosePassengerPageState extends State<ChoosePassengerPage> {
           Divider(
             thickness: 2,
           ),
-          allPassengers.keys.isEmpty
-              ? Center(
-                  child: Text(
-                  '暂无乘车人',
-                  style: TextStyle(color: Colors.grey),
-                ))
-              : Column(
-                  children: allPassengers.keys
-                      .map((p) => CheckboxListTile(
-                            value: allPassengers[p],
-                            onChanged: (b) {
-                              setState(() {
-                                allPassengers[p] = b ?? false;
-                              });
-                            },
-                            title: Text(
-                              '${p.name}      '
-                              '${p.student ?? false ? '学生' : '成人'}      '
-                              '${p.idCardNo?.replaceRange(5, 16, '*' * 11)}',
-                            ),
-                          ))
-                      .toList(),
-                )
+          loading
+              ? Center(child: CircularProgressIndicator())
+              : allPassengers.keys.isEmpty
+                  ? Center(
+                      child: Text(
+                      '暂无乘车人',
+                      style: TextStyle(color: Colors.grey),
+                    ))
+                  : Column(
+                      children: allPassengers.keys
+                          .map((p) => CheckboxListTile(
+                                value: allPassengers[p],
+                                onChanged: (b) {
+                                  setState(() {
+                                    allPassengers[p] = b ?? false;
+                                  });
+                                },
+                                title: Text(
+                                  '${p.name}      '
+                                  '${p.student ?? false ? '学生' : '成人'}      '
+                                  '${p.idCardNo?.replaceRange(5, 16, '*' * 11)}',
+                                ),
+                              ))
+                          .toList(),
+                    )
         ],
       ),
     );
   }
 
   void fetchData() async {
+    loading = true;
+    setState(() {});
     List<Passenger> passengers = await PassengerApi.allMyPassengers();
     passengers.forEach((passenger) {
       if (!allPassengers.containsKey(passenger)) {
         allPassengers[passenger] = false;
       }
-      if (widget.choose.contains(passenger)){
+      if (widget.choose.contains(passenger)) {
         allPassengers[passenger] = true;
       }
     });
+    loading = false;
     setState(() {});
   }
 }

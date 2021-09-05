@@ -8,24 +8,24 @@ part of 'ticket.dart';
 
 Ticket _$TicketFromJson(Map<String, dynamic> json) {
   return Ticket(
-    ticketId: json['ticketId'] as num?,
-    coachId: json['coachId'] as num?,
-    stationTrainCode: json['stationTrainCode'] as String?,
-    startStationTelecode: json['startStationTelecode'] as String?,
-    endStationTelecode: json['endStationTelecode'] as String?,
-    startStation: json['startStation'] == null
-        ? null
-        : Station.fromJson(json['startStation'] as Map<String, dynamic>),
-    endStation: json['endStation'] == null
-        ? null
-        : Station.fromJson(json['endStation'] as Map<String, dynamic>),
-    startTime: json['startTime'] as String?,
-    endTime: json['endTime'] as String?,
-    price: json['price'] as num?,
-    passengerId: json['passengerId'] as num?,
-    orderId: json['orderId'] as num?,
-    student: json['student'] as bool?,
-  );
+      ticketId: json['ticketId'] as num?,
+      coachId: json['coachId'] as num?,
+      stationTrainCode: json['stationTrainCode'] as String?,
+      startStationTelecode: json['startStationTelecode'] as String?,
+      endStationTelecode: json['endStationTelecode'] as String?,
+      startStation: json['startStation'] == null
+          ? null
+          : Station.fromJson(json['startStation'] as Map<String, dynamic>),
+      endStation: json['endStation'] == null
+          ? null
+          : Station.fromJson(json['endStation'] as Map<String, dynamic>),
+      startTime: json['startTime'] as String?,
+      endTime: json['endTime'] as String?,
+      price: json['price'] as num?,
+      passengerId: json['passengerId'] as num?,
+      orderId: json['orderId'] as num?,
+      student: json['student'] as bool?,
+      seat: json['seat'] as num?);
 }
 
 Map<String, dynamic> _$TicketToJson(Ticket instance) => <String, dynamic>{
@@ -42,4 +42,5 @@ Map<String, dynamic> _$TicketToJson(Ticket instance) => <String, dynamic>{
       'passengerId': instance.passengerId,
       'orderId': instance.orderId,
       'student': instance.student,
+      'seat': instance.seat,
     };

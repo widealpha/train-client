@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:train/ui/pay_order.dart';
+import 'package:train/ui/payed_order.dart';
+import 'package:train/ui/self_ticket.dart';
+
+import 'need_pay_order.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({Key? key}) : super(key: key);
@@ -40,6 +43,9 @@ class _OrderPageState extends State<OrderPage> {
             ),
             Expanded(
               child: InkWell(
+                onTap: () {
+                  Get.to(() => PayedOrderPage());
+                },
                 child: Column(
                   children: [
                     Icon(Icons.list_alt_rounded,
@@ -51,6 +57,9 @@ class _OrderPageState extends State<OrderPage> {
             ),
             Expanded(
               child: InkWell(
+                onTap: () {
+                  Get.to(() => SelfTicketPage());
+                },
                 child: Column(
                   children: [
                     Icon(Icons.sticky_note_2_rounded,

@@ -22,19 +22,23 @@ class LoginPage extends StatelessWidget {
     return s;
   }
 
+  Future<String?> _registerUser(LoginData data) async {
+    String s = await UserApi.register(data.name, data.password);
+    if (s == '注册成功') {
+      BotToast.showText(text: '注册成功');
+      return null;
+    }
+    return s;
+  }
+
   Future<String> _recoverPassword(String name) async {
     return "fail";
-    // return Future.delayed(loginTime).then((_) {
-    //   if (!mockUsers.containsKey(name)) {
-    //     return 'User not exists';
-    //   }
-    //   return null;
-    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
+      loginAfterSignUp: false,
       title: Constants.appName,
       logo: 'assets/icon/icon.png',
       logoTag: Constants.logoTag,
@@ -84,16 +88,10 @@ class LoginPage extends StatelessWidget {
         return null;
       },
       onLogin: (loginData) {
-        print('Login info');
-        print('Name: ${loginData.name}');
-        print('Password: ${loginData.password}');
         return _loginUser(loginData);
       },
       onSignup: (loginData) {
-        print('Signup info');
-        print('Name: ${loginData.name}');
-        print('Password: ${loginData.password}');
-        return _loginUser(loginData);
+        return _registerUser(loginData);
       },
       onSubmitAnimationCompleted: () {
         // Navigator.of(context).pushReplacement(FadePageRoute(
@@ -106,7 +104,7 @@ class LoginPage extends StatelessWidget {
         return _recoverPassword(name);
         // Show new password dialog
       },
-      showDebugButtons: true,
+      showDebugButtons: false,
     );
   }
 }
