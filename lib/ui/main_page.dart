@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:train/api/api.dart';
 import 'package:train/bean/station.dart';
+import 'package:train/ui/order_page.dart';
 import 'package:train/ui/station_page.dart';
 import 'package:train/ui/train_page.dart';
 import 'package:train/util/constance.dart';
 
+import 'error.dart';
 import 'login.dart';
 
 class MainPage extends StatefulWidget {
@@ -24,6 +26,12 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
+    SystemApi.getSystemSetting().then((setting) {
+      if (setting != null && setting.start == 0) {
+        Get.to(() => ErrorPage(text: '系统正在维护,请稍后...'));
+      }
+    });
+    StationApi.allStations();
     _buildPage();
   }
 
@@ -127,8 +135,28 @@ class _MainPageState extends State<MainPage> {
                   leading: Icon(Icons.exit_to_app_rounded),
                   title: Text('切换账户'),
                   onTap: () {
-                    UserApi.logout();
-                    Get.to(() => LoginPage());
+                    Get.dialog(AlertDialog(
+                      title: Text('退出账号'),
+                      content: Text('确认退出账号?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('取消'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            UserApi.logout();
+                            BotToast.showText(text: '成功退出账户');
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                            Get.to(() => LoginPage());
+                          },
+                          child: Text('确定'),
+                        ),
+                      ],
+                    ));
                   })
               : Container()),
         ),
@@ -155,15 +183,7 @@ class _MainPageState extends State<MainPage> {
   Widget _buildPage() {
     if (_pages.isEmpty) {
       _pages.add(TrainPage());
-      _pages.add(Container(
-        child: TextButton(
-          child: Text('省份选择'),
-          onPressed: () async {
-            Station? s = await Get.to(() => StationPage());
-            print(s);
-          },
-        ),
-      ));
+      _pages.add(OrderPage());
       _pages.add(Container(
         child: TextButton(
           child: Text('省份选择'),

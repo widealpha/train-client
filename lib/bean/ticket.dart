@@ -18,7 +18,11 @@ class Ticket {
   num? passengerId;
   num? orderId;
   bool? student;
-
+  String? seat;
+  @JsonKey(ignore: true)
+  String? startStationName;
+  @JsonKey(ignore: true)
+  String? endStationName;
 
   Ticket(
       {this.ticketId,
@@ -33,7 +37,8 @@ class Ticket {
       this.price,
       this.passengerId,
       this.orderId,
-      this.student});
+      this.student,
+      this.seat});
 
   factory Ticket.fromJson(Map<String, dynamic> json) => _$TicketFromJson(json);
 

@@ -8,8 +8,9 @@ class Order {
   num? userId;
   num? payed;
   num? price;
+  String? time;
 
-  Order({this.orderId, this.userId, this.payed, this.price});
+  Order({this.orderId, this.userId, this.payed, this.price, this.time});
 
   factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
 

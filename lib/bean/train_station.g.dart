@@ -13,7 +13,7 @@ TrainStation _$TrainStationFromJson(Map<String, dynamic> json) {
     arriveDayDiff: json['arriveDayDiff'] as num,
     arriveTime: json['arriveTime'],
     updateArriveTime: json['updateArriveTime'],
-    startTime: json['startTime'] as String,
+    startTime: json['startTime'],
     updateStartTime: json['updateStartTime'],
     startDayDiff: json['startDayDiff'] as num,
     stationNo: json['stationNo'] as num,

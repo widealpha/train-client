@@ -9,7 +9,7 @@ class TrainStation {
   num arriveDayDiff;
   dynamic arriveTime;
   dynamic updateArriveTime;
-  String startTime;
+  dynamic startTime;
   dynamic updateStartTime;
   num startDayDiff;
   num stationNo;

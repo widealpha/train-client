@@ -28,10 +28,10 @@ class _StationPageState extends State<StationPage> {
     StationApi.allStations().then((List<Station> list) {
       stationList = List.from(list);
       list.forEach((Station s) {
-        if (s.name == '江宁西') {
-          return;
-        }
-        stations[s.abbr] = s;
+        // if (s.name == '江宁西') {
+        //   return;
+        // }
+        stations[s.en] = s;
         if (alphabetMap.containsKey(s.abbr[0])) {
           alphabetMap[s.abbr[0]]?.add(s);
         } else {
@@ -202,7 +202,7 @@ class _StationPageState extends State<StationPage> {
           child: CircularButton(
             icon: const Icon(Icons.place),
             onPressed: () {
-              Get.back(result: stations['jnx']);
+              Get.back(result: stations['jinanxi']);
             },
           ),
         ),
@@ -238,9 +238,11 @@ class _StationPageState extends State<StationPage> {
   Widget _buildHeader() {
     List<Station> hotCityList = [];
     hotCityList.addAll([
-      Station.fromJson(stations['xzd']!.toJson())..tagIndex = '★',
-      Station.fromJson(stations['jnx']!.toJson())..tagIndex = '★',
-      Station.fromJson(stations['bjn']!.toJson())..tagIndex = '★',
+      Station.fromJson(stations['xuzhoudong']!.toJson())..tagIndex = '★',
+      Station.fromJson(stations['jinanxi']!.toJson())..tagIndex = '★',
+      Station.fromJson(stations['beijingnan']!.toJson())..tagIndex = '★',
+      Station.fromJson(stations['beijing']!.toJson())..tagIndex = '★',
+      Station.fromJson(stations['shanghai']!.toJson())..tagIndex = '★',
     ]);
     return Padding(
       padding: const EdgeInsets.all(20),

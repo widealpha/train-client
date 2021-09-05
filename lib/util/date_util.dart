@@ -26,4 +26,17 @@ class DateUtil {
     }
     return s;
   }
+
+  static String dateTimeInterval(String time1, String time2) {
+    DateTime dateTime1 = DateTime.parse('$time1');
+    DateTime dateTime2 = DateTime.parse('$time2');
+    int minute = (dateTime1.hour * 60 + dateTime1.minute) -
+        (dateTime2.hour * 60 + dateTime2.minute);
+    minute = minute.abs();
+    String s = '${minute ~/ 60}小时';
+    if (minute % 60 != 0) {
+      s += '${minute % 60}分钟';
+    }
+    return s;
+  }
 }

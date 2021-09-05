@@ -13,6 +13,8 @@ Passenger _$PassengerFromJson(Map<String, dynamic> json) {
     student: json['student'] as bool?,
     verified: json['verified'] as bool?,
     studentVerified: json['studentVerified'] as bool?,
+    name: json['name'] as String?,
+    phone: json['phone'] as String?,
   );
 }
 
@@ -22,4 +24,6 @@ Map<String, dynamic> _$PassengerToJson(Passenger instance) => <String, dynamic>{
       'student': instance.student,
       'verified': instance.verified,
       'studentVerified': instance.studentVerified,
+      'name': instance.name,
+      'phone': instance.phone,
     };
