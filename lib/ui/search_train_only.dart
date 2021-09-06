@@ -1,5 +1,7 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:train/api/api.dart';
 import 'package:train/bean/train.dart';
 import 'package:train/bean/train_station.dart';
@@ -8,9 +10,7 @@ import 'package:train/util/date_util.dart';
 class SearchTrainOnly extends StatefulWidget {
   final String stationTrainCode;
 
-  const SearchTrainOnly(
-      {Key? key,
-      required this.stationTrainCode})
+  const SearchTrainOnly({Key? key, required this.stationTrainCode})
       : super(key: key);
 
   @override
@@ -18,7 +18,8 @@ class SearchTrainOnly extends StatefulWidget {
 }
 
 class _SearchTrainOnlyState extends State<SearchTrainOnly> {
-  final ExpandableController _expandableController = ExpandableController();
+  final ExpandableController _expandableController =
+      ExpandableController(initialExpanded: true);
   Train? train;
   bool loading = true;
 
@@ -173,6 +174,7 @@ class _SearchTrainOnlyState extends State<SearchTrainOnly> {
     ]));
     List<TrainStation> trainStations = train!.trainStations!;
     for (int i = 0; i < trainStations.length; i++) {
+      TrainStation t = trainStations[i];
       rows.add(TableRow(children: [
         Padding(
           padding: EdgeInsets.all(6),
@@ -183,11 +185,19 @@ class _SearchTrainOnlyState extends State<SearchTrainOnly> {
           style: TextStyle(color: Colors.black),
         ),
         Text(
-          trainStations[i].arriveTime ?? '---',
+          t.arriveTime == null
+              ? '---'
+              : t.arriveTime +
+                  '${t.updateArriveTime != null ? '(晚点:${t.updateArriveTime})' : ''}' +
+                  '${t.arriveDayDiff == 0 ? '' : '  +${t.arriveDayDiff}天'}',
           style: TextStyle(color: Colors.black),
         ),
         Text(
-          trainStations[i].startTime ?? '---',
+          t.startTime == null
+              ? '---'
+              : t.startTime +
+                  '${t.updateStartTime != null ? ' (晚点:${t.updateStartTime}) ' : ''}' +
+                  '${t.startDayDiff == 0 ? '' : '  +${t.startDayDiff}天'}',
           style: TextStyle(color: Colors.black),
         ),
         Text(
@@ -241,6 +251,10 @@ class _SearchTrainOnlyState extends State<SearchTrainOnly> {
     loading = true;
     setState(() {});
     train = await TrainApi.trainInfo(widget.stationTrainCode);
+    if (train == null || !isRunning()) {
+      BotToast.showText(text: '列车数据不存在,或列车已停运');
+      Get.back();
+    }
     loading = false;
     setState(() {});
   }
@@ -250,5 +264,13 @@ class _SearchTrainOnlyState extends State<SearchTrainOnly> {
       return '---';
     }
     return StationApi.cachedStationInfo(telecode)?.name ?? '---';
+  }
+
+  bool isRunning() {
+    try {
+      return DateTime.parse(train!.stopDate!).isAfter(DateTime.now());
+    } catch (e) {
+      return false;
+    }
   }
 }

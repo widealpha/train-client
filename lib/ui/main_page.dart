@@ -163,7 +163,7 @@ class _MainPageState extends State<MainPage> {
     if (_pages.isEmpty) {
       _pages.add(TrainPage());
       _pages.add(OrderPage());
-      _pages.add(ChangeUserInfoPage());
+      _pages.add(ChangeUserInfoPage(notUseAppbar: true,));
     }
 
     return _pages[_selectedIndex];

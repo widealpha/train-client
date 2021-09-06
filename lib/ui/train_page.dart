@@ -220,8 +220,9 @@ class _TrainPageState extends State<TrainPage> {
                       onPressed: () {
                         if (_controller.text.isNotEmpty) {
                           Get.to(
-                                () => SearchTrainOnly(
-                                stationTrainCode: _controller.text),
+                            () => SearchTrainOnly(
+                                stationTrainCode:
+                                    _controller.text.toUpperCase()),
                           );
                         }
                       },

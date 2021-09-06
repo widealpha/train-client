@@ -150,14 +150,16 @@ class TrainApi {
   static String _trainStations = host + '/train/trainStations';
 
   static Future<Train?> trainInfo(String stationTrainCode) async {
-    Response response = await Connection.dio.post(_trainInfo,
-        queryParameters: {'stationTrainCode': stationTrainCode},
-        options: Connection.options);
-    if (response.data['code'] == 0) {
-      return Train.fromJson(response.data['data']);
-    } else {
-      BotToast.showText(text: response.data['message']);
-    }
+    try {
+      Response response = await Connection.dio.post(_trainInfo,
+          queryParameters: {'stationTrainCode': stationTrainCode},
+          options: Connection.options);
+      if (response.data['code'] == 0) {
+        return Train.fromJson(response.data['data']);
+      } else {
+        BotToast.showText(text: response.data['message']);
+      }
+    } catch (e){}
     return null;
   }
 

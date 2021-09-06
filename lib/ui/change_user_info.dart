@@ -7,7 +7,8 @@ import 'package:train/bean/user_info.dart';
 import 'package:train/util/constance.dart';
 
 class ChangeUserInfoPage extends StatefulWidget {
-  const ChangeUserInfoPage({Key? key}) : super(key: key);
+  final bool? notUseAppbar;
+  const ChangeUserInfoPage({Key? key, this.notUseAppbar}) : super(key: key);
 
   @override
   _ChangeUserInfoPageState createState() => _ChangeUserInfoPageState();
@@ -44,10 +45,10 @@ class _ChangeUserInfoPageState extends State<ChangeUserInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: widget.notUseAppbar == null ? AppBar(
         title: Text('修改个人信息'),
         centerTitle: true,
-      ),
+      ) : null,
       body: ListView(
         children: [
           Container(
