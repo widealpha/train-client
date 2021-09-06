@@ -272,7 +272,7 @@ class _PayOrderPageState extends State<PayOrderPage> {
     if (tMinutes.inSeconds < duration.inSeconds) {
       return '订单已超时';
     }
-    return '${tMinutes.inMinutes - duration.inMinutes}分钟${(tMinutes.inSeconds - duration.inSeconds) % 60}秒';
+    return '${tMinutes.inMinutes - duration.inMinutes - 1}分钟${(tMinutes.inSeconds - duration.inSeconds) % 60}秒';
   }
 
   void fetchData() async {

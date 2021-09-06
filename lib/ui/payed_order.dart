@@ -106,6 +106,7 @@ class _OrderCardState extends State<OrderCard> {
   List<Widget> buildCardList() {
     List<Widget> widgets = [];
     tickets.forEach((t) {
+      bool canChange = DateTime.parse(t.startTime!).isAfter(DateTime.now());
       widgets.add(Card(
         child: Column(
           children: [
@@ -205,7 +206,7 @@ class _OrderCardState extends State<OrderCard> {
                             style: TextButton.styleFrom(
                                 primary: Colors.white,
                                 backgroundColor: Colors.redAccent),
-                            onPressed: () {
+                            onPressed: canChange ? () {
                               Get.dialog(AlertDialog(
                                 title: Text('温馨提醒'),
                                 content: Text('确认退订订单吗?'),
@@ -228,12 +229,12 @@ class _OrderCardState extends State<OrderCard> {
                                   ),
                                 ],
                               ));
-                            },
+                            } : null,
                             child: Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 8),
                               child: Text(
-                                '退票',
+                                '${canChange ? '' : '不可'}退票',
                                 style: TextStyle(fontSize: 18),
                               ),
                             ))),
@@ -244,7 +245,7 @@ class _OrderCardState extends State<OrderCard> {
                             style: TextButton.styleFrom(
                                 primary: Colors.white,
                                 backgroundColor: Colors.blue),
-                            onPressed: () async {
+                            onPressed: canChange ? () async {
                               Train? train = await Get.to(() => ChangeTrainPage(ticket: t));
                               if (train != null){
                                 Get.dialog(AlertDialog(
@@ -280,12 +281,12 @@ class _OrderCardState extends State<OrderCard> {
                                 ));
                               }
                               widget.f();
-                            },
+                            } : null,
                             child: Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 8),
                               child: Text(
-                                '改签',
+                                '${canChange ? '' : '不可'}改签',
                                 style: TextStyle(fontSize: 18),
                               ),
                             ))),

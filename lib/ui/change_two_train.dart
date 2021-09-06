@@ -1,28 +1,26 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:expandable/expandable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:train/api/api.dart';
+import 'package:train/bean/change_train.dart';
 import 'package:train/bean/remain_seat.dart';
 import 'package:train/bean/station.dart';
 import 'package:train/bean/ticket.dart';
 import 'package:train/bean/train.dart';
 import 'package:train/bean/train_price.dart';
 import 'package:train/bean/train_station.dart';
-import 'package:train/ui/change_two_train.dart';
-import 'package:train/ui/main_page.dart';
-import 'package:train/ui/order_confirm.dart';
 import 'package:train/ui/train_page.dart';
 import 'package:train/util/date_util.dart';
 
-class TrainSearchResultPage extends StatefulWidget {
+class ChangeTwoTrainPage extends StatefulWidget {
   final Ticket ticket;
   final DateTime date;
   final bool onlyHighWay;
   final bool student;
 
-  const TrainSearchResultPage(
+  const ChangeTwoTrainPage(
       {Key? key,
       required this.ticket,
       required this.date,
@@ -31,18 +29,18 @@ class TrainSearchResultPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  _TrainSearchResultPageState createState() => _TrainSearchResultPageState();
+  _ChangeTwoTrainPageState createState() => _ChangeTwoTrainPageState();
 }
 
-class _TrainSearchResultPageState extends State<TrainSearchResultPage> {
+class _ChangeTwoTrainPageState extends State<ChangeTwoTrainPage> {
   final RefreshController _controller = RefreshController();
   bool _loading = true;
   late Ticket _ticket = widget.ticket;
   late DateTime _date = widget.date;
   late bool _canBeforeDay;
   late bool _canAfterDay;
-  List<Train> trains = [];
-  List<Train> filteredTrains = [];
+  List<ChangeTrain> trains = [];
+  List<ChangeTrain> filteredTrains = [];
   bool sortByEarly = true;
   bool sortByLate = false;
   bool sortByTimeShort = false;
@@ -172,17 +170,6 @@ class _TrainSearchResultPageState extends State<TrainSearchResultPage> {
             )),
         actions: [
           IconButton(
-            icon: Icon(Icons.wrap_text_rounded),
-            onPressed: () {
-              Get.to(() => ChangeTwoTrainPage(
-                    ticket: _ticket,
-                    date: _date,
-                    student: student,
-                    onlyHighWay: onlyHighWay,
-                  ));
-            },
-          ),
-          IconButton(
             icon: Icon(Icons.refresh),
             onPressed: () {
               fetchData();
@@ -214,22 +201,18 @@ class _TrainSearchResultPageState extends State<TrainSearchResultPage> {
                 TextSpan(
                     text: _ticket.endStation!.name,
                     style: TextStyle(fontWeight: FontWeight.bold)),
-                TextSpan(text: ' 的直达列车\n'),
+                TextSpan(text: ' 的换乘列车\n'),
               ]),
               style: TextStyle(fontSize: 18),
             ),
             TextButton(
                 style: TextButton.styleFrom(backgroundColor: Colors.blue),
                 onPressed: () {
-                  Get.to(() => ChangeTwoTrainPage(
-                      ticket: _ticket,
-                      date: _date,
-                      onlyHighWay: onlyHighWay,
-                      student: student));
+                  Get.back();
                 },
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: Text('接续换乘',
+                  child: Text('返回',
                       style: TextStyle(color: Colors.white, fontSize: 18)),
                 )),
             Padding(padding: EdgeInsets.all(12)),
@@ -246,8 +229,8 @@ class _TrainSearchResultPageState extends State<TrainSearchResultPage> {
                   itemBuilder: (c, i) {
                     return ListTile(
                       key: ValueKey(filteredTrains[i]),
-                      title: TrainCard(
-                        train: filteredTrains[i],
+                      title: ChangeTwoTrainCard(
+                        changeTrain: filteredTrains[i],
                         ticket: _ticket,
                         date: _date,
                         student: student,
@@ -424,8 +407,8 @@ class _TrainSearchResultPageState extends State<TrainSearchResultPage> {
     setState(() {});
   }
 
-  List<Train> filter(List<Train> trains) {
-    List<Train> list = List.from(trains);
+  List<ChangeTrain> filter(List<ChangeTrain> trains) {
+    List<ChangeTrain> list = List.from(trains);
     var nowString = DateTime.now().toIso8601String();
     if (_date.toIso8601String().substring(0, 10) ==
         nowString.substring(0, 10)) {
@@ -452,30 +435,33 @@ class _TrainSearchResultPageState extends State<TrainSearchResultPage> {
 
     if (onlyHighWay) {
       list.removeWhere((element) =>
-          element.trainClassCode != 'D' && element.trainClassCode != '8');
+          element.firstTrain.trainClassCode != 'D' &&
+          element.firstTrain.trainClassCode != '8' &&
+          element.lastTrain.trainClassCode != 'D' &&
+          element.lastTrain.trainClassCode != '8');
     }
 
     return list;
   }
 
-  String getTrainStartTime(Train train) {
-    if (train.trainStations == null) {
+  String getTrainStartTime(ChangeTrain train) {
+    if (train.firstTrain.trainStations == null) {
       return '---';
     }
-    for (TrainStation station in train.trainStations!) {
-      if (station.stationTelecode == train.nowStartStationTelecode) {
+    for (TrainStation station in train.firstTrain.trainStations!) {
+      if (station.stationTelecode == train.firstTrain.nowStartStationTelecode) {
         return station.startTime;
       }
     }
     return '---';
   }
 
-  String getTrainArriveTime(Train train) {
-    if (train.trainStations == null) {
+  String getTrainArriveTime(ChangeTrain train) {
+    if (train.lastTrain.trainStations == null) {
       return '---';
     }
-    for (TrainStation station in train.trainStations!) {
-      if (station.stationTelecode == train.nowEndStationTelecode) {
+    for (TrainStation station in train.lastTrain.trainStations!) {
+      if (station.stationTelecode == train.lastTrain.nowEndStationTelecode) {
         if (station.arriveDayDiff - station.startDayDiff > 0) {
           return '${station.arriveTime}  + ${station.arriveDayDiff - station.startDayDiff}';
         }
@@ -488,8 +474,10 @@ class _TrainSearchResultPageState extends State<TrainSearchResultPage> {
   Future<void> fetchData() async {
     _loading = true;
     setState(() {});
-    TrainApi.trainsBetween(
-            _ticket.startStationTelecode!, _ticket.endStationTelecode!)
+    TrainApi.trainsBetweenWithChange(
+            _ticket.startStationTelecode!,
+            _ticket.endStationTelecode!,
+            _date.toIso8601String().substring(0, 10))
         .then((list) {
       setState(() {
         trains = list;
@@ -502,55 +490,43 @@ class _TrainSearchResultPageState extends State<TrainSearchResultPage> {
   }
 }
 
-class TrainCard extends StatefulWidget {
+class ChangeTwoTrainCard extends StatefulWidget {
   final Ticket ticket;
-  final Train train;
+  final ChangeTrain changeTrain;
   final DateTime date;
   final bool student;
 
-  const TrainCard(
+  const ChangeTwoTrainCard(
       {Key? key,
-      required this.train,
+      required this.changeTrain,
       required this.ticket,
       required this.date,
       required this.student})
       : super(key: key);
 
   @override
-  _TrainCardState createState() => _TrainCardState();
+  _ChangeTwoTrainCardState createState() => _ChangeTwoTrainCardState();
 }
 
-class _TrainCardState extends State<TrainCard> {
-  late final Train train = widget.train;
+class _ChangeTwoTrainCardState extends State<ChangeTwoTrainCard> {
+  late final ChangeTrain train = widget.changeTrain;
+  late final List<Train> trains = [
+    widget.changeTrain.firstTrain,
+    widget.changeTrain.lastTrain
+  ];
   late final Ticket ticket = widget.ticket;
   final ExpandableController _expandableController = ExpandableController();
-  List<TrainPrice> trainPriceList = [];
-  List<RemainSeat> remainSeatList = [];
+  Map<Train, List<TrainPrice>> trainPriceList = {};
+  Map<Train, List<RemainSeat>> remainSeatList = {};
 
   @override
   void initState() {
-    TrainApi.trainPrice(train.nowStartStationTelecode!,
-            train.nowEndStationTelecode!, train.stationTrainCode!)
-        .then((list) {
-      trainPriceList.clear();
-      trainPriceList.addAll(list);
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    TrainApi.trainTicketRemaining(
-            train.nowStartStationTelecode!,
-            train.nowEndStationTelecode!,
-            train.stationTrainCode!,
-            widget.date.toIso8601String().substring(0, 10))
-        .then((list) {
-      remainSeatList.clear();
-      remainSeatList.addAll(list);
-      if (mounted) {
-        setState(() {});
-      }
-    });
     super.initState();
+    for (Train train in trains) {
+      trainPriceList[train] = [];
+      remainSeatList[train] = [];
+    }
+    fetchData();
   }
 
   @override
@@ -569,102 +545,126 @@ class _TrainCardState extends State<TrainCard> {
               padding: EdgeInsets.all(10),
               child: Row(
                 children: [
-                  Container(
-                    alignment: Alignment.center,
-                    child: Text(train.stationTrainCode!,
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                    width: 80,
-                  ),
-                  Container(
-                    child: Column(children: [
-                      Row(children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          child: stationTextWidget(
-                              train.nowStartStationTelecode!,
-                              train.trainStations!),
-                        ),
-                        Text(getStationName(ticket.startStationTelecode))
-                      ]),
-                      Text(getTrainStartTime(train),
-                          style: TextStyle(color: Colors.blue))
-                    ]),
-                    width: 100,
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                          getStationName(
+                              train.firstTrain.nowStartStationTelecode!),
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      width: 80,
+                    ),
                   ),
                   Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
                       child: Column(
-                    children: [
-                      Text(
-                        DateUtil.timeInterval(getTrainStartTime(train),
-                            getTrainArriveTime(train)),
-                        style: TextStyle(color: Colors.black45),
+                        children: [
+                          Text(train.firstStationTrainCode,
+                              style: TextStyle(fontSize: 16)),
+                          Divider(
+                            height: 2,
+                            thickness: 1,
+                          ),
+                          Text(
+                              '${train.firstTrain.startStartTime!.substring(0, 5)}-${train.firstTrainArriveTime.substring(0, 5)}',
+                              style: TextStyle(fontSize: 12, color: Colors.blue))
+                        ],
                       ),
-                      Icon(Icons.arrow_right_alt_rounded,
-                          color: Colors.blueAccent)
-                    ],
-                  )),
-                  Container(
-                    width: 100,
-                    child: Column(children: [
-                      Row(children: [
-                        Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: stationTextWidget(
-                                train.nowEndStationTelecode!,
-                                train.trainStations!)),
-                        Text(getStationName(ticket.endStationTelecode!))
-                      ]),
-                      Text(getTrainArriveTime(train),
-                          style: TextStyle(color: Colors.blue))
-                    ]),
+                      width: 80,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Column(
+                        children: [
+                          Text('${train.interval ~/ 60}时${train.interval % 60}分',
+                              style: TextStyle(fontSize: 12, color: Colors.blue)),
+                          Text(getStationName(train.changeStation),
+                              style: TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.bold))
+                        ],
+                      ),
+                      width: 80,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Column(
+                        children: [
+                          Text(train.lastStationTrainCode,
+                              style: TextStyle(fontSize: 16)),
+                          Divider(
+                            height: 2,
+                            thickness: 1,
+                          ),
+                          Text(
+                              '${train.lastTrainStartTime.substring(0, 5)}-${train.lastTrain.endArriveTime!.substring(0, 5)}',
+                              style: TextStyle(fontSize: 12, color: Colors.blue))
+                        ],
+                      ),
+                      width: 80,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                          getStationName(train.lastTrain.nowEndStationTelecode!),
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      width: 80,
+                    ),
                   ),
                 ],
               )),
           onTap: () {
-            Get.showOverlay(
-                asyncFunction: () async {
-                  List<RemainSeat> l1 = await TrainApi.trainTicketRemaining(
-                      train.nowStartStationTelecode!,
-                      train.nowEndStationTelecode!,
-                      train.stationTrainCode!,
-                      widget.date.toIso8601String().substring(0, 10));
-                  List<TrainPrice> l2 = await TrainApi.trainPrice(
-                      train.nowStartStationTelecode!,
-                      train.nowEndStationTelecode!,
-                      train.stationTrainCode!);
-                  if (l1.isEmpty || l2.isEmpty) {
-                    BotToast.showText(text: '数据已过期');
-                  } else {
-                    Get.to(() => OrderConfirmPage(
-                          remainSeatList: l1,
-                          trainPriceList: l2,
-                          date: widget.date,
-                          ticket: ticket,
-                          train: train,
-                        ));
-                  }
-                },
-                loadingWidget: Dialog(
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    alignment: Alignment.center,
-                    child: Text(
-                      '正在生成订单,请稍后...',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ));
+            // Get.showOverlay(
+            //     asyncFunction: () async {
+            //       List<RemainSeat> l1 = await TrainApi.trainTicketRemaining(
+            //           train.nowStartStationTelecode!,
+            //           train.nowEndStationTelecode!,
+            //           train.stationTrainCode!,
+            //           widget.date.toIso8601String().substring(0, 10));
+            //       List<TrainPrice> l2 = await TrainApi.trainPrice(
+            //           train.nowStartStationTelecode!,
+            //           train.nowEndStationTelecode!,
+            //           train.stationTrainCode!);
+            //       if (l1.isEmpty || l2.isEmpty) {
+            //         BotToast.showText(text: '数据已过期');
+            //       } else {
+            //         Get.to(() => OrderConfirmPage(
+            //           remainSeatList: l1,
+            //           trainPriceList: l2,
+            //           date: widget.date,
+            //           ticket: ticket,
+            //           train: train,
+            //         ));
+            //       }
+            //     },
+            //     loadingWidget: Dialog(
+            //       child: Container(
+            //         padding: EdgeInsets.all(8),
+            //         alignment: Alignment.center,
+            //         child: Text(
+            //           '正在生成订单,请稍后...',
+            //           style: TextStyle(fontSize: 18),
+            //         ),
+            //       ),
+            //     ));
           },
         ),
         collapsed: buildCollapsed(),
-        expanded: buildExpand(),
+        expanded: Container(),
         builder: (_, collapsed, expanded) {
           return Padding(
             padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
             child: Expandable(
               collapsed: collapsed,
-              expanded: expanded,
+              expanded: Container(),
               theme: const ExpandableThemeData(crossFadePoint: 0),
             ),
           );
@@ -673,136 +673,81 @@ class _TrainCardState extends State<TrainCard> {
     );
   }
 
-  Widget buildExpand() {
-    List<TableRow> rows = [];
-    rows.add(
-        TableRow(decoration: BoxDecoration(color: Colors.grey[100]), children: [
-      Padding(
-          padding: EdgeInsets.all(6),
-          child: Text('站序号', style: TextStyle(color: Colors.blueAccent))),
-      Text('站名', style: TextStyle(color: Colors.blueAccent)),
-      Text('到时', style: TextStyle(color: Colors.blueAccent)),
-      Text('发时', style: TextStyle(color: Colors.blueAccent)),
-      Text('时长', style: TextStyle(color: Colors.blueAccent)),
-    ]));
-    List<TrainStation> trainStations = train.trainStations!;
-    for (int i = 0; i < trainStations.length; i++) {
-      rows.add(TableRow(children: [
-        Padding(
-          padding: EdgeInsets.all(6),
-          child: Text('${i + 1}'),
-        ),
-        Text(
-          StationApi.cachedStationInfo(trainStations[i].stationTelecode)!.name,
-          style: TextStyle(
-              color: (trainStations[i].stationTelecode ==
-                          train.nowStartStationTelecode ||
-                      trainStations[i].stationTelecode ==
-                          train.nowEndStationTelecode)
-                  ? Colors.blueAccent
-                  : Colors.black),
-        ),
-        Text(
-          trainStations[i].arriveTime ?? '---',
-          style: TextStyle(
-              color: (trainStations[i].stationTelecode ==
-                          train.nowStartStationTelecode ||
-                      trainStations[i].stationTelecode ==
-                          train.nowEndStationTelecode)
-                  ? Colors.blueAccent
-                  : Colors.black),
-        ),
-        Text(
-          trainStations[i].startTime ?? '---',
-          style: TextStyle(
-              color: (trainStations[i].stationTelecode ==
-                          train.nowStartStationTelecode ||
-                      trainStations[i].stationTelecode ==
-                          train.nowEndStationTelecode)
-                  ? Colors.blueAccent
-                  : Colors.black),
-        ),
-        Text(
-          (trainStations[i].arriveTime == null ||
-                  trainStations[i].startTime == null ||
-                  trainStations[i].startTime == trainStations[i].arriveTime)
-              ? '---'
-              : DateUtil.timeInterval(
-                      trainStations[i].startTime, trainStations[i].arriveTime)
-                  .substring(3),
-          style: TextStyle(
-              color: (trainStations[i].stationTelecode ==
-                          train.nowStartStationTelecode ||
-                      trainStations[i].stationTelecode ==
-                          train.nowEndStationTelecode)
-                  ? Colors.blueAccent
-                  : Colors.black),
-        ),
-      ]));
-    }
-    return Table(
-      border: TableBorder(
-          horizontalInside: BorderSide(color: Colors.grey, width: 0.2)),
-      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-      children: rows,
-    );
-  }
-
   Widget buildCollapsed() {
     if (seePrice) {
       return Column(
         children: [
           Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: trainPriceList
-                .map((e) => Expanded(
-                      child: Text.rich(
-                        TextSpan(children: [
-                          TextSpan(text: '${e.seatTypeName}:  '),
-                          TextSpan(
-                              text:
-                                  '￥${widget.student ? e.price * (e.seatTypeCode == 'WZ' || e.seatTypeCode == 'A1' ? 0.5 : 0.75) : e.price}',
-                              style: TextStyle(
-                                  color: widget.student
-                                      ? Colors.redAccent
-                                      : Colors.green))
-                        ]),
-                        textAlign: TextAlign.center,
-                      ),
-                    ))
-                .toList(),
-          )
+          ...trains.map((train) => Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    margin: EdgeInsets.symmetric(horizontal: 4),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle, color: Colors.blue),
+                    child: Text('${trains.indexOf(train) + 1}',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                  ...trainPriceList[train]!.map((e) => Expanded(
+                        child: Text.rich(
+                          TextSpan(children: [
+                            TextSpan(text: '${e.seatTypeName}:  '),
+                            TextSpan(
+                                text:
+                                    '￥${widget.student ? e.price * (e.seatTypeCode == 'WZ' || e.seatTypeCode == 'A1' ? 0.5 : 0.75) : e.price}',
+                                style: TextStyle(
+                                    color: widget.student
+                                        ? Colors.redAccent
+                                        : Colors.green))
+                          ]),
+                          textAlign: TextAlign.center,
+                        ),
+                      ))
+                ],
+              ))
         ],
       );
     } else {
       return Column(
         children: [
           Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: remainSeatList
-                .map((e) => Expanded(
-                      child: Text.rich(
-                        TextSpan(children: [
-                          TextSpan(
-                              text: '${e.seatTypeName}:  ',
-                              style: TextStyle(
-                                  color: e.remaining == 0
-                                      ? Colors.grey
-                                      : Colors.black)),
-                          TextSpan(
-                              text: e.remaining == 0 ? '无' : '${e.remaining}张',
-                              style: TextStyle(
-                                  color: e.remaining == 0
-                                      ? Colors.grey
-                                      : Colors.green))
-                        ]),
-                        textAlign: TextAlign.center,
-                      ),
-                    ))
-                .toList(),
-          ),
+          ...trains.map(
+            (train) =>
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Container(
+                width: 24,
+                height: 24,
+                margin: EdgeInsets.symmetric(horizontal: 4),
+                alignment: Alignment.center,
+                decoration:
+                    BoxDecoration(shape: BoxShape.circle, color: Colors.blue),
+                child: Text('${trains.indexOf(train) + 1}',
+                    style: TextStyle(color: Colors.white)),
+              ),
+              ...remainSeatList[train]!.map((e) => Expanded(
+                    child: Text.rich(
+                      TextSpan(children: [
+                        TextSpan(
+                            text: '${e.seatTypeName}:  ',
+                            style: TextStyle(
+                                color: e.remaining == 0
+                                    ? Colors.grey
+                                    : Colors.black)),
+                        TextSpan(
+                            text: e.remaining == 0 ? '无' : '${e.remaining}张',
+                            style: TextStyle(
+                                color: e.remaining == 0
+                                    ? Colors.grey
+                                    : Colors.green))
+                      ]),
+                      textAlign: TextAlign.center,
+                    ),
+                  ))
+            ]),
+          )
         ],
       );
     }
@@ -844,25 +789,42 @@ class _TrainCardState extends State<TrainCard> {
 
   String getTrainStartTime(Train train) {
     if (train.trainStations == null) {
-      return '---';
+      return '-----';
     }
     for (TrainStation station in train.trainStations!) {
       if (station.stationTelecode == train.nowStartStationTelecode) {
         return station.startTime;
       }
     }
-    return '---';
+    return '-----';
   }
 
   String getTrainArriveTime(Train train) {
     if (train.trainStations == null) {
-      return '---';
+      return '-----';
     }
     for (TrainStation station in train.trainStations!) {
       if (station.stationTelecode == train.nowEndStationTelecode) {
         return station.arriveTime;
       }
     }
-    return '---';
+    return '-----';
+  }
+
+  void fetchData() async {
+    for (Train train in trains) {
+      trainPriceList[train] = await TrainApi.trainPrice(
+          train.nowStartStationTelecode!,
+          train.nowEndStationTelecode!,
+          train.stationTrainCode!);
+      remainSeatList[train] = await TrainApi.trainTicketRemaining(
+          train.nowStartStationTelecode!,
+          train.nowEndStationTelecode!,
+          train.stationTrainCode!,
+          widget.date.toIso8601String().substring(0, 10));
+      if (mounted) {
+        setState(() {});
+      }
+    }
   }
 }

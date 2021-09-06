@@ -28,9 +28,6 @@ class _StationPageState extends State<StationPage> {
     StationApi.allStations().then((List<Station> list) {
       stationList = List.from(list);
       list.forEach((Station s) {
-        // if (s.name == '江宁西') {
-        //   return;
-        // }
         stations[s.en] = s;
         if (alphabetMap.containsKey(s.abbr[0])) {
           alphabetMap[s.abbr[0]]?.add(s);
@@ -38,7 +35,7 @@ class _StationPageState extends State<StationPage> {
           alphabetMap[s.abbr[0]] = [s];
         }
       });
-      stationList.sort((a,b){
+      stationList.sort((a, b) {
         return (a.abbr.compareTo(b.abbr));
       });
       // SuspensionUtil.sortListBySuspensionTag(stationList);
@@ -100,18 +97,6 @@ class _StationPageState extends State<StationPage> {
                         ],
                       ),
                     ),
-                    // ListTile(
-                    //     title: Text("当前城市"),
-                    //     trailing: Row(
-                    //       mainAxisSize: MainAxisSize.min,
-                    //       children: <Widget>[
-                    //         Icon(
-                    //           Icons.place,
-                    //           size: 20.0,
-                    //         ),
-                    //         Text(" 济南"),
-                    //       ],
-                    //     )),
                     Divider(
                       height: .0,
                     ),
@@ -189,7 +174,9 @@ class _StationPageState extends State<StationPage> {
           if (s.name == 'name') {
             return;
           }
-          if (s.abbr.contains(query) || s.name.contains(query)) {
+          if (s.abbr.contains(query) ||
+              s.name.contains(query) ||
+              s.en.contains(query)) {
             suggestions.add(s);
           }
         });

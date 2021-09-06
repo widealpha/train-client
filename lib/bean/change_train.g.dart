@@ -14,6 +14,8 @@ ChangeTrain _$ChangeTrainFromJson(Map<String, dynamic> json) {
     lastTrainStartTime: json['lastTrainStartTime'] as String,
     changeStation: json['changeStation'] as String,
     interval: json['interval'] as num,
+    firstTrain: Train.fromJson(json['firstTrain'] as Map<String, dynamic>),
+    lastTrain: Train.fromJson(json['lastTrain'] as Map<String, dynamic>),
   );
 }
 
@@ -24,5 +26,7 @@ Map<String, dynamic> _$ChangeTrainToJson(ChangeTrain instance) =>
       'lastStationTrainCode': instance.lastStationTrainCode,
       'lastTrainStartTime': instance.lastTrainStartTime,
       'changeStation': instance.changeStation,
+      'firstTrain': instance.firstTrain,
+      'lastTrain': instance.lastTrain,
       'interval': instance.interval,
     };

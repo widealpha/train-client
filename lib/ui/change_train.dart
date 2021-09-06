@@ -24,7 +24,7 @@ class ChangeTrainPage extends StatefulWidget {
 class _ChangeTrainPageState extends State<ChangeTrainPage> {
   late bool _canBeforeDay;
   late bool _canAfterDay;
-  late DateTime _date = DateTime.tryParse(widget.ticket.startTime!) ?? DateTime.now();
+  late DateTime _date = DateTime.now();
   late Ticket ticket = widget.ticket;
   final RefreshController _controller = RefreshController();
   bool _loading = true;
@@ -249,7 +249,7 @@ class _ChangeTrainPageState extends State<ChangeTrainPage> {
                           Icons.hourglass_bottom_rounded,
                           color: (sortByTimeShort || sortByTimeLong)
                               ? Colors.blue
-                              : Colors.black,
+                              : Colors.grey,
                           size: 32,
                         ),
                         Text('耗时最${sortByTimeShort ? '短' : '长'}',
@@ -257,7 +257,7 @@ class _ChangeTrainPageState extends State<ChangeTrainPage> {
                               fontSize: 12,
                               color: (sortByTimeShort || sortByTimeLong)
                                   ? Colors.blue
-                                  : Colors.black,
+                                  : Colors.grey,
                             ))
                       ],
                     ),
@@ -284,7 +284,7 @@ class _ChangeTrainPageState extends State<ChangeTrainPage> {
                           Icons.access_time_rounded,
                           color: (sortByLate || sortByEarly)
                               ? Colors.blue
-                              : Colors.black,
+                              : Colors.grey,
                           size: 32,
                         ),
                         Text('最${sortByLate ? '晚' : '早'}发车',
@@ -292,7 +292,7 @@ class _ChangeTrainPageState extends State<ChangeTrainPage> {
                               fontSize: 12,
                               color: (sortByLate || sortByEarly)
                                   ? Colors.blue
-                                  : Colors.black,
+                                  : Colors.grey,
                             ))
                       ],
                     ),
@@ -309,13 +309,13 @@ class _ChangeTrainPageState extends State<ChangeTrainPage> {
                       children: [
                         Icon(
                           Icons.directions_train,
-                          color: onlyHighWay ? Colors.blue : Colors.black,
+                          color: onlyHighWay ? Colors.blue : Colors.grey,
                           size: 32,
                         ),
                         Text('只查高铁/动车',
                             style: TextStyle(
                               fontSize: 12,
-                              color: onlyHighWay ? Colors.blue : Colors.black,
+                              color: onlyHighWay ? Colors.blue : Colors.grey,
                             ))
                       ],
                     ),
@@ -332,13 +332,13 @@ class _ChangeTrainPageState extends State<ChangeTrainPage> {
                       children: [
                         Icon(
                           Icons.child_care_rounded,
-                          color: student ? Colors.blue : Colors.black,
+                          color: student ? Colors.blue : Colors.grey,
                           size: 32,
                         ),
                         Text('学生票',
                             style: TextStyle(
                               fontSize: 12,
-                              color: student ? Colors.blue : Colors.black,
+                              color: student ? Colors.blue : Colors.grey,
                             ))
                       ],
                     ),
@@ -354,6 +354,14 @@ class _ChangeTrainPageState extends State<ChangeTrainPage> {
 
   List<Train> filter(List<Train> trains) {
     List<Train> list = List.from(trains);
+
+    var nowString = DateTime.now().toIso8601String();
+    if (_date.toIso8601String().substring(0, 10) ==
+        nowString.substring(0, 10)) {
+      list.removeWhere((element) =>
+      getTrainStartTime(element).compareTo(nowString.substring(11, 19)) <=
+          0);
+    }
 
     if (sortByEarly) {
       list.sort((a, b) => getTrainStartTime(a).compareTo(getTrainStartTime(b)));
@@ -397,6 +405,9 @@ class _ChangeTrainPageState extends State<ChangeTrainPage> {
     }
     for (TrainStation station in train.trainStations!) {
       if (station.stationTelecode == train.nowEndStationTelecode) {
+        if (station.arriveDayDiff - station.startDayDiff > 0){
+          return '${station.arriveTime}  + ${station.arriveDayDiff - station.startDayDiff}';
+        }
         return station.arriveTime;
       }
     }
@@ -418,7 +429,6 @@ class _ChangeTrainPageState extends State<ChangeTrainPage> {
 
     setState(() {});
   }
-
 
   void changeDate(DateTime date) {
     DateTime now =

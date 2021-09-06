@@ -353,7 +353,9 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
                                 trainPriceList[choose].seatTypeCode,
                                 p.passengerId!,
                                 p.student!,
-                                _date.toIso8601String().substring(0, 10));
+                                _date.toIso8601String().substring(0, 10),
+                                passengerChooseSeat[p]
+                            );
                             if (ticketId == null) {
                               // BotToast.showText(text: '${p.name}购票失败');
                               return;

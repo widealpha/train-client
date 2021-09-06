@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:train/bean/train.dart';
 
 part 'change_train.g.dart';
 
@@ -9,9 +10,11 @@ class ChangeTrain {
   String lastStationTrainCode;
   String lastTrainStartTime;
   String changeStation;
+  Train firstTrain;
+  Train lastTrain;
   num interval;
 
-  ChangeTrain({required this.firstStationTrainCode, required this.firstTrainArriveTime, required this.lastStationTrainCode, required this.lastTrainStartTime, required this.changeStation, required this.interval});
+  ChangeTrain({required this.firstStationTrainCode, required this.firstTrainArriveTime, required this.lastStationTrainCode, required this.lastTrainStartTime, required this.changeStation, required this.interval, required this.firstTrain, required this.lastTrain});
 
   factory ChangeTrain.fromJson(Map<String, dynamic> json) => _$ChangeTrainFromJson(json);
 

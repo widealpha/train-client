@@ -59,8 +59,8 @@ class _NeedToPayPageState extends State<NeedToPayPage> {
                       child: Text(
                         '订单${i + 1} ',
                         style: TextStyle(
-                            color: Colors.orange,
-                            fontSize: 32),
+                            color: Colors.deepOrange,
+                            fontSize: 24),
                       ),
                     ),
                     Expanded(
@@ -68,6 +68,7 @@ class _NeedToPayPageState extends State<NeedToPayPage> {
                     )
                   ],
                 ),
+                canPay(orders[i])?
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
@@ -134,6 +135,34 @@ class _NeedToPayPageState extends State<NeedToPayPage> {
                       ),
                     ],
                   ),
+                ):Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Container(),
+                      ),
+                      Expanded(
+                        child: Center(
+                            child: TextButton(
+                                style: TextButton.styleFrom(
+                                    primary: Colors.white,
+                                    backgroundColor: Colors.grey),
+                                onPressed: () async {
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 8),
+                                  child: Text(
+                                    '订单已超时取消',
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                ))),
+                      ),
+                    ],
+                  ),
                 )
               ],
             ),
@@ -151,8 +180,17 @@ class _NeedToPayPageState extends State<NeedToPayPage> {
     List<Order> l = await OrderFormApi.allMyOrders();
     orders.clear();
     orders.addAll(l.where((o) => o.payed == 0));
+    orders.sort((a,b)=>b.time!.compareTo(a.time!));
     loading = false;
     setState(() {});
+  }
+
+  bool canPay(Order order){
+    DateTime time = DateTime.parse(order.time!);
+    if (time.add(Duration(minutes: 30)).isBefore(DateTime.now())){
+      return false;
+    }
+    return true;
   }
 }
 
