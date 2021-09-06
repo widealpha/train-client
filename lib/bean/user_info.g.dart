@@ -20,24 +20,14 @@ UserInfo _$UserInfoFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$UserInfoToJson(UserInfo instance) {
-  final val = <String, dynamic>{
-    'userId': instance.userId,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('gender', instance.gender);
-  writeNotNull('realName', instance.realName);
-  writeNotNull('headImage', instance.headImage);
-  writeNotNull('nickname', instance.nickname);
-  writeNotNull('phone', instance.phone);
-  writeNotNull('mail', instance.mail);
-  writeNotNull('address', instance.address);
-  writeNotNull('selfPassengerId', instance.selfPassengerId);
-  return val;
-}
+Map<String, dynamic> _$UserInfoToJson(UserInfo instance) => <String, dynamic>{
+      'userId': instance.userId,
+      'gender': instance.gender,
+      'realName': instance.realName,
+      'headImage': instance.headImage,
+      'nickname': instance.nickname,
+      'phone': instance.phone,
+      'mail': instance.mail,
+      'address': instance.address,
+      'selfPassengerId': instance.selfPassengerId,
+    };

@@ -67,6 +67,7 @@ class _PayedOrderPageState extends State<PayedOrderPage> {
     List<Order> l = await OrderFormApi.allMyOrders();
     orders.clear();
     orders.addAll(l.where((o) => o.payed == 1 && (o.price ?? 0) > 0));
+    orders.sort((a,b)=>b.time!.compareTo(a.time!));
     loading = false;
     setState(() {});
   }
@@ -184,10 +185,10 @@ class _OrderCardState extends State<OrderCard> {
                   ),
                   Container(
                     child: Text(
-                        '${passengerMap[t]!.name}'
-                            '  (${passengerMap[t]!.student! ? '学生' : '成人'}票)'
-                            ' ${seatTypeCodeToName[coachMap[t]!.seatTypeCode]}'
-                            ' ${coachMap[t]!.coachNo}车'
+                        '${passengerMap[t]?.name}'
+                            '  (${passengerMap[t]?.student??false ? '学生' : '成人'}票)'
+                            ' ${seatTypeCodeToName[coachMap[t]?.seatTypeCode]}'
+                            ' ${coachMap[t]?.coachNo}车'
                             ' ${seatMap[t]}号'
                             ' ￥${t.price}                      '),
                   )
@@ -303,6 +304,8 @@ class _OrderCardState extends State<OrderCard> {
 
   void fetchData() async {
     tickets = await TicketApi.ticketInfoByOrder(widget.order.orderId!);
+    tickets.sort((a,b) => b.startTime!.compareTo(a.startTime!));
+
     for (Ticket ticket in tickets) {
       ticket.startStation =
           StationApi.cachedStationInfo(ticket.startStationTelecode!);

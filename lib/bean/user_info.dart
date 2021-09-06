@@ -5,21 +5,13 @@ part 'user_info.g.dart';
 @JsonSerializable()
 class UserInfo {
   int? userId;
-  @JsonKey(includeIfNull: false)
   int? gender;
-  @JsonKey(includeIfNull: false)
   String? realName;
-  @JsonKey(includeIfNull: false)
   String? headImage;
-  @JsonKey(includeIfNull: false)
   String? nickname;
-  @JsonKey(includeIfNull: false)
   String? phone;
-  @JsonKey(includeIfNull: false)
   String? mail;
-  @JsonKey(includeIfNull: false)
   String? address;
-  @JsonKey(includeIfNull: false)
   int? selfPassengerId;
 
 
@@ -38,5 +30,5 @@ class UserInfo {
   factory UserInfo.fromJson(Map<String, dynamic> json) =>
       _$UserInfoFromJson(json);
 
-  Map<String, dynamic> toJson(instance) => _$UserInfoToJson(this);
+  Map<String, dynamic> toJson() => _$UserInfoToJson(this);
 }

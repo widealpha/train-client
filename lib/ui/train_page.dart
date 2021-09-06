@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:train/bean/station.dart';
 import 'package:train/bean/ticket.dart';
+import 'package:train/ui/search_train_only.dart';
 import 'package:train/ui/station_page.dart';
 import 'package:train/ui/train_search_result.dart';
 import 'package:train/util/date_util.dart';
@@ -21,6 +22,7 @@ class _TrainPageState extends State<TrainPage> {
   DateTime date = DateTime.now();
   bool onlyHighWay = false;
   bool student = false;
+  TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
@@ -204,6 +206,32 @@ class _TrainPageState extends State<TrainPage> {
             ),
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            width: Get.width,
+            child: Card(
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: '请输入列车号搜索列车',
+                    suffixIcon: TextButton.icon(
+                      onPressed: () {
+                        if (_controller.text.isNotEmpty) {
+                          Get.to(
+                                () => SearchTrainOnly(
+                                stationTrainCode: _controller.text),
+                          );
+                        }
+                      },
+                      icon: Icon(Icons.search_rounded),
+                      label: Text('搜索列车'),
+                    )),
+              ),
+            ),
+          ),
+        )
       ],
     );
   }

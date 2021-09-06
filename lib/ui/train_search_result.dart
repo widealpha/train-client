@@ -11,7 +11,6 @@ import 'package:train/bean/train.dart';
 import 'package:train/bean/train_price.dart';
 import 'package:train/bean/train_station.dart';
 import 'package:train/ui/change_two_train.dart';
-import 'package:train/ui/main_page.dart';
 import 'package:train/ui/order_confirm.dart';
 import 'package:train/ui/train_page.dart';
 import 'package:train/util/date_util.dart';
@@ -585,7 +584,7 @@ class _TrainCardState extends State<TrainCard> {
                               train.nowStartStationTelecode!,
                               train.trainStations!),
                         ),
-                        Text(getStationName(ticket.startStationTelecode))
+                        Text(getStationName(train.nowStartStationTelecode))
                       ]),
                       Text(getTrainStartTime(train),
                           style: TextStyle(color: Colors.blue))
@@ -613,7 +612,7 @@ class _TrainCardState extends State<TrainCard> {
                             child: stationTextWidget(
                                 train.nowEndStationTelecode!,
                                 train.trainStations!)),
-                        Text(getStationName(ticket.endStationTelecode!))
+                        Text(getStationName(train.nowEndStationTelecode!))
                       ]),
                       Text(getTrainArriveTime(train),
                           style: TextStyle(color: Colors.blue))

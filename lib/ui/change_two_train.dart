@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:train/bean/ticket.dart';
 import 'package:train/bean/train.dart';
 import 'package:train/bean/train_price.dart';
 import 'package:train/bean/train_station.dart';
+import 'package:train/ui/order_confirm_two.dart';
 import 'package:train/ui/train_page.dart';
 import 'package:train/util/date_util.dart';
 
@@ -622,39 +624,51 @@ class _ChangeTwoTrainCardState extends State<ChangeTwoTrainCard> {
                 ],
               )),
           onTap: () {
-            // Get.showOverlay(
-            //     asyncFunction: () async {
-            //       List<RemainSeat> l1 = await TrainApi.trainTicketRemaining(
-            //           train.nowStartStationTelecode!,
-            //           train.nowEndStationTelecode!,
-            //           train.stationTrainCode!,
-            //           widget.date.toIso8601String().substring(0, 10));
-            //       List<TrainPrice> l2 = await TrainApi.trainPrice(
-            //           train.nowStartStationTelecode!,
-            //           train.nowEndStationTelecode!,
-            //           train.stationTrainCode!);
-            //       if (l1.isEmpty || l2.isEmpty) {
-            //         BotToast.showText(text: '数据已过期');
-            //       } else {
-            //         Get.to(() => OrderConfirmPage(
-            //           remainSeatList: l1,
-            //           trainPriceList: l2,
-            //           date: widget.date,
-            //           ticket: ticket,
-            //           train: train,
-            //         ));
-            //       }
-            //     },
-            //     loadingWidget: Dialog(
-            //       child: Container(
-            //         padding: EdgeInsets.all(8),
-            //         alignment: Alignment.center,
-            //         child: Text(
-            //           '正在生成订单,请稍后...',
-            //           style: TextStyle(fontSize: 18),
-            //         ),
-            //       ),
-            //     ));
+            Get.showOverlay(
+                asyncFunction: () async {
+                  List<RemainSeat> l1 = await TrainApi.trainTicketRemaining(
+                      train.firstTrain.nowStartStationTelecode!,
+                      train.firstTrain.nowEndStationTelecode!,
+                      train.firstTrain.stationTrainCode!,
+                      widget.date.toIso8601String().substring(0, 10));
+                  List<TrainPrice> l2 = await TrainApi.trainPrice(
+                      train.firstTrain.nowStartStationTelecode!,
+                      train.firstTrain.nowEndStationTelecode!,
+                      train.firstTrain.stationTrainCode!);
+                  List<RemainSeat> l3 = await TrainApi.trainTicketRemaining(
+                      train.lastTrain.nowStartStationTelecode!,
+                      train.lastTrain.nowEndStationTelecode!,
+                      train.lastTrain.stationTrainCode!,
+                      widget.date.toIso8601String().substring(0, 10));
+                  List<TrainPrice> l4 = await TrainApi.trainPrice(
+                      train.lastTrain.nowStartStationTelecode!,
+                      train.lastTrain.nowEndStationTelecode!,
+                      train.lastTrain.stationTrainCode!);
+                  if (l1.isEmpty || l2.isEmpty) {
+                    BotToast.showText(text: '数据已过期');
+                  } else {
+                    Get.to(() => OrderConfirmTwoPage(
+                      remainSeatList: l1,
+                      trainPriceList: l2,
+                      remainSeatList2: l3,
+                      trainPriceList2: l4,
+                      date: widget.date,
+                      ticket: ticket,
+                      train: train.firstTrain,
+                      train2: train.lastTrain,
+                    ));
+                  }
+                },
+                loadingWidget: Dialog(
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '正在生成订单,请稍后...',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ));
           },
         ),
         collapsed: buildCollapsed(),

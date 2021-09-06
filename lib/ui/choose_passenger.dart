@@ -79,19 +79,40 @@ class _ChoosePassengerPageState extends State<ChoosePassengerPage> {
                     ))
                   : Column(
                       children: allPassengers.keys
-                          .map((p) => CheckboxListTile(
-                                value: allPassengers[p],
-                                onChanged: (b) {
-                                  setState(() {
-                                    allPassengers[p] = b ?? false;
-                                  });
-                                },
-                                title: Text(
-                                  '${p.name}      '
-                                  '${p.student ?? false ? '学生' : '成人'}      '
-                                  '${p.idCardNo?.replaceRange(5, 16, '*' * 11)}',
+                          .map((p) => Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                    child: Text(p.name!, textAlign: TextAlign.center)),
+                                Expanded(
+                                  flex:2,
+                                  child:
+                                  Text(p.idCardNo!.replaceRange(5, 16, '*' * 11), textAlign: TextAlign.center),
                                 ),
-                              ))
+                                Expanded(
+                                  child: Text(p.student ?? false ? '学生' : '成人',
+                                      style: TextStyle(color: Colors.blue)),
+                                ),
+                                Expanded(
+                                    child: Checkbox(
+                                      value: allPassengers[p],
+                                      onChanged: (b) {
+                                        setState(() {
+                                          allPassengers[p] = b ?? false;
+                                        });
+                                      },
+                                    )),
+                              ],
+                            ),
+                            Divider()
+                          ],
+                        ),
+                      ))
                           .toList(),
                     )
         ],

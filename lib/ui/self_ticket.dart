@@ -261,6 +261,7 @@ class _SelfTicketPageState extends State<SelfTicketPage> {
     loading = true;
     setState(() {});
     tickets = await TicketApi.allSelfTicket();
+    tickets.sort((a,b) => b.startTime!.compareTo(a.startTime!));
     for (Ticket ticket in tickets) {
       ticket.startStation =
           StationApi.cachedStationInfo(ticket.startStationTelecode!);

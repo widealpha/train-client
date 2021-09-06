@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
-import 'package:get/get.dart' hide Response, MultipartFile;
+import 'package:get/get.dart' hide Response, MultipartFile, FormData;
 import 'package:train/bean/change_train.dart';
 import 'package:train/bean/coach.dart';
 import 'package:train/bean/order.dart';
@@ -52,7 +52,7 @@ class UserApi {
       if (response.statusCode == 200 && response.data['code'] == 0) {
         await HiveUtils.set('token', response.data['data']);
         response =
-        await Connection.dio.post(_userInfo, options: Connection.options);
+            await Connection.dio.post(_userInfo, options: Connection.options);
         UserInfo userInfo = UserInfo.fromJson(response.data['data']);
         HiveUtils.set('user_id', userInfo.userId);
         HiveUtils.set('head_image', userInfo.headImage);
@@ -99,9 +99,13 @@ class UserApi {
 
   static Future<UserInfo> userInfoDetail() async {
     Response response =
-    await Connection.dio.post(_userInfo, options: Connection.options);
+        await Connection.dio.post(_userInfo, options: Connection.options);
     if (response.data['code'] == 0) {
-      return UserInfo.fromJson(response.data['data']);
+      UserInfo userInfo = UserInfo.fromJson(response.data['data']);
+      HiveUtils.set('user_id', userInfo.userId);
+      HiveUtils.set('head_image', userInfo.headImage);
+      HiveUtils.set('nickname', userInfo.nickname);
+      return userInfo;
     } else {
       BotToast.showText(text: response.data['message']);
     }
@@ -109,27 +113,29 @@ class UserApi {
   }
 
   static Future<String> uploadHeadImage(Uint8List image) async {
-    Map<String, dynamic> formMap = {};
-    formMap['multipartFile'] = MultipartFile.fromBytes(image);
+    if (image.isEmpty) {
+      return '';
+    }
     Response response = await Connection.dio.post(_uploadImage,
         options: Connection.options,
-      data: formMap
-    );
-    if (response.data['code'] == 0){
+        data: FormData.fromMap(
+            {"image": MultipartFile.fromBytes(image, filename: 'image')}));
+    if (response.data['code'] == 0) {
       return response.data['data'];
     }
     return '';
   }
 
-  static Future<String> updateUserInfo(UserInfo userInfo) async {
-    Response response = await Connection.dio.post(_uploadImage,
-        options: Connection.options,
-        data: jsonEncode(userInfo)
+  static Future<bool> updateUserInfo(UserInfo userInfo) async {
+    Response response = await Connection.dio.post(
+      _updateInfo,
+      options: Connection.options,
+      data: jsonEncode(userInfo),
     );
-    if (response.data['code'] == 0){
+    if (response.data['code'] == 0) {
       return response.data['data'];
     }
-    return '';
+    return false;
   }
 }
 
@@ -180,8 +186,8 @@ class TrainApi {
     return Pager(0, 0, 0, 0, []);
   }
 
-  static Future<List<Train>> trainsBetween(String startStationTelecode,
-      String endStationTelecode) async {
+  static Future<List<Train>> trainsBetween(
+      String startStationTelecode, String endStationTelecode) async {
     Response response = await Connection.dio.post(_trainsBetween,
         queryParameters: {
           'startStationTelecode': startStationTelecode,
@@ -198,7 +204,9 @@ class TrainApi {
   }
 
   static Future<List<ChangeTrain>> trainsBetweenWithChange(
-      String startStationTelecode, String endStationTelecode, String date) async {
+      String startStationTelecode,
+      String endStationTelecode,
+      String date) async {
     Response response = await Connection.dio.post(_trainsBetweenWithChange,
         queryParameters: {
           'startStationTelecode': startStationTelecode,
@@ -281,7 +289,7 @@ class StationApi {
       return _stationCache;
     }
     Response response =
-    await Connection.dio.post(_allStations, options: Connection.options);
+        await Connection.dio.post(_allStations, options: Connection.options);
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       _stationCache = l.map((e) => Station.fromJson(e)).toList();
@@ -312,7 +320,7 @@ class StationApi {
       }
     }
     Response response =
-    await Connection.dio.post(_stationInfo, options: Connection.options);
+        await Connection.dio.post(_stationInfo, options: Connection.options);
     if (response.data['code'] == 0) {
       return Station.fromJson(response.data['data']);
     } else {
@@ -327,7 +335,7 @@ class SeatTypeApi {
 
   static Future<List<SeatType>> allSeatTypes() async {
     Response response =
-    await Connection.dio.post(_allSeatTypes, options: Connection.options);
+        await Connection.dio.post(_allSeatTypes, options: Connection.options);
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => SeatType.fromJson(e)).toList();
@@ -367,7 +375,7 @@ class TicketApi {
 
   static Future<List<Ticket>> allMyTicket() async {
     Response response =
-    await Connection.dio.post(_allMyTickets, options: Connection.options);
+        await Connection.dio.post(_allMyTickets, options: Connection.options);
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => Ticket.fromJson(e)).toList();
@@ -379,7 +387,7 @@ class TicketApi {
 
   static Future<List<Ticket>> allSelfTicket() async {
     Response response =
-    await Connection.dio.post(_allSelfTickets, options: Connection.options);
+        await Connection.dio.post(_allSelfTickets, options: Connection.options);
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => Ticket.fromJson(e)).toList();
@@ -389,8 +397,8 @@ class TicketApi {
     return [];
   }
 
-
-  static Future<int?> buyTicket(String startStationTelecode,
+  static Future<int?> buyTicket(
+      String startStationTelecode,
       String endStationTelecode,
       String stationTrainCode,
       String seatTypeCode,
@@ -459,8 +467,8 @@ class TicketApi {
     return response.data['data'] ?? '';
   }
 
-  static Future<Order?> changeTicket(num ticketId,
-      String stationTrainCode) async {
+  static Future<Order?> changeTicket(
+      num ticketId, String stationTrainCode) async {
     Response response = await Connection.dio.post(_changeTicket,
         options: Connection.options,
         queryParameters: {
@@ -485,7 +493,7 @@ class OrderFormApi {
 
   static Future<List<Order>> allMyOrders() async {
     Response response =
-    await Connection.dio.post(_allMyOrders, options: Connection.options);
+        await Connection.dio.post(_allMyOrders, options: Connection.options);
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => Order.fromJson(e)).toList();
@@ -544,12 +552,16 @@ class SystemApi {
   static String _systemSetting = host + '/system/systemSetting';
 
   static Future<SystemSetting?> getSystemSetting() async {
-    Response response =
-    await Connection.dio.post(_systemSetting, options: Connection.options);
-    if (response.data['code'] == 0) {
-      return SystemSetting.fromJson(response.data['data']);
-    } else {
-      BotToast.showText(text: response.data['message']);
+    try {
+      Response response =
+      await Connection.dio.post(_systemSetting, options: Connection.options);
+      if (response.data['code'] == 0) {
+        return SystemSetting.fromJson(response.data['data']);
+      } else {
+        BotToast.showText(text: response.data['message']);
+      }
+    } catch (e){
+      return null;
     }
     return null;
   }
@@ -562,7 +574,7 @@ class PassengerApi {
 
   static Future<List<Passenger>> allMyPassengers() async {
     Response response =
-    await Connection.dio.post(_allMyPassenger, options: Connection.options);
+        await Connection.dio.post(_allMyPassenger, options: Connection.options);
     if (response.data['code'] == 0) {
       List l = response.data['data'];
       return l.map((e) => Passenger.fromJson(e)).toList();

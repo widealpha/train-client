@@ -3,10 +3,9 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:train/api/api.dart';
-import 'package:train/bean/station.dart';
 import 'package:train/ui/order_page.dart';
-import 'package:train/ui/station_page.dart';
 import 'package:train/ui/train_page.dart';
+import 'package:train/ui/change_user_info.dart';
 import 'package:train/util/constance.dart';
 
 import 'error.dart';
@@ -28,7 +27,7 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     SystemApi.getSystemSetting().then((setting) {
       if (setting != null && setting.start == 0) {
-        Get.to(() => ErrorPage(text: '系统正在维护,请稍后...'));
+        Get.off(() => ErrorPage(text: '系统正在维护,请稍后...'));
       }
     });
     StationApi.allStations();
@@ -73,27 +72,7 @@ class _MainPageState extends State<MainPage> {
                         ],
                       ),
                       onTap: () {
-                        Get.dialog(AlertDialog(
-                          title: Text('退出账号'),
-                          content: Text('确认退出账号?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('取消'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                UserApi.logout();
-                                BotToast.showText(text: '成功退出账户');
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('确定'),
-                            ),
-                          ],
-                        ));
+                        Get.to(() => ChangeUserInfoPage());
                       },
                     )
                   : GestureDetector(
@@ -184,21 +163,18 @@ class _MainPageState extends State<MainPage> {
     if (_pages.isEmpty) {
       _pages.add(TrainPage());
       _pages.add(OrderPage());
-      _pages.add(Container(
-        child: TextButton(
-          child: Text('省份选择'),
-          onPressed: () async {
-            Station? s = await Get.to(() => StationPage());
-            print(s);
-          },
-        ),
-      ));
+      _pages.add(ChangeUserInfoPage());
     }
 
     return _pages[_selectedIndex];
   }
 
   _onItemTapped(int index) {
+    if (!UserApi.isLogin) {
+      Get.to(() => LoginPage());
+      return;
+    }
+
     setState(() {
       _selectedIndex = index;
     });

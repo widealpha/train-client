@@ -14,36 +14,48 @@ import 'package:train/util/date_util.dart';
 
 import 'choose_passenger.dart';
 
-class OrderConfirmPage extends StatefulWidget {
+class OrderConfirmTwoPage extends StatefulWidget {
   final DateTime date;
   final List<TrainPrice> trainPriceList;
   final List<RemainSeat> remainSeatList;
   final Ticket ticket;
   final Train train;
 
-  const OrderConfirmPage(
+  final List<TrainPrice> trainPriceList2;
+  final List<RemainSeat> remainSeatList2;
+  final Train train2;
+
+  const OrderConfirmTwoPage(
       {Key? key,
       required this.date,
       required this.trainPriceList,
       required this.remainSeatList,
       required this.ticket,
-      required this.train})
+      required this.train,
+      required this.trainPriceList2,
+      required this.remainSeatList2,
+      required this.train2})
       : super(key: key);
 
   @override
-  _OrderConfirmPageState createState() => _OrderConfirmPageState();
+  _OrderConfirmTwoPageState createState() => _OrderConfirmTwoPageState();
 }
 
-class _OrderConfirmPageState extends State<OrderConfirmPage> {
+class _OrderConfirmTwoPageState extends State<OrderConfirmTwoPage> {
   late bool _canBeforeDay;
   late bool _canAfterDay;
   late DateTime _date;
   late final Ticket ticket = widget.ticket;
   late final List<TrainPrice> trainPriceList = List.from(widget.trainPriceList);
   late final List<RemainSeat> remainSeatList = List.from(widget.remainSeatList);
+  late final List<TrainPrice> trainPriceList2 =
+      List.from(widget.trainPriceList2);
+  late final List<RemainSeat> remainSeatList2 =
+      List.from(widget.remainSeatList2);
   List<Passenger> passengers = [];
   Map<Passenger, String?> passengerChooseSeat = {};
   int choose = 0;
+  int choose2 = 0;
 
   @override
   void initState() {
@@ -205,8 +217,80 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
               ],
             ),
           ),
+          Padding(
+            padding: EdgeInsets.all(4),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        StationApi.cachedStationInfo(
+                                widget.train2.nowStartStationTelecode!)!
+                            .name,
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      Padding(padding: EdgeInsets.all(2)),
+                      Text(
+                        getTrainStartTime(widget.train2),
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                    child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.credit_card_rounded,
+                          color: Colors.blue,
+                        ),
+                        Text('   ' + widget.train2.stationTrainCode!),
+                      ],
+                    ),
+                    SizedBox(
+                        width: 200,
+                        height: 30,
+                        child: Image.asset(
+                          'assets/icon/right_arrow.png',
+                          fit: BoxFit.fill,
+                        )),
+                    Text(
+                      DateUtil.timeInterval(getTrainStartTime(widget.train2),
+                          getTrainArriveTime(widget.train2)),
+                    ),
+                  ],
+                )),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        StationApi.cachedStationInfo(
+                                widget.train2.nowEndStationTelecode!)!
+                            .name,
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      Padding(padding: EdgeInsets.all(2)),
+                      Text(
+                        getTrainArriveTime(widget.train2),
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
           Divider(),
           buildSeatChoose(),
+          Padding(padding: EdgeInsets.all(4)),
+          buildSeatChoose2(),
           Divider(thickness: 6),
           Container(
             color: Colors.white,
@@ -223,9 +307,9 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
                         Expanded(
                             child: Text(p.name!, textAlign: TextAlign.center)),
                         Expanded(
-                          flex:2,
-                          child:
-                              Text(p.idCardNo!.replaceRange(5, 16, '*' * 11), textAlign: TextAlign.center),
+                          flex: 2,
+                          child: Text(p.idCardNo!.replaceRange(5, 16, '*' * 11),
+                              textAlign: TextAlign.center),
                         ),
                         Expanded(
                           child: Text(p.student ?? false ? '学生' : '成人',
@@ -373,11 +457,27 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
                                 p.student!,
                                 _date.toIso8601String().substring(0, 10),
                                 passengerChooseSeat[p]);
+                            int? ticketId2 = await TicketApi.buyTicket(
+                                widget.train2.nowStartStationTelecode!,
+                                widget.train2.nowEndStationTelecode!,
+                                widget.train2.stationTrainCode!,
+                                trainPriceList[choose].seatTypeCode,
+                                p.passengerId!,
+                                p.student!,
+                                _date.toIso8601String().substring(0, 10),
+                                passengerChooseSeat[p]);
                             if (ticketId == null) {
                               // BotToast.showText(text: '${p.name}购票失败');
                               return;
                             } else {
                               ticketIds.add(ticketId);
+                            }
+
+                            if (ticketId2 == null) {
+                              // BotToast.showText(text: '${p.name}购票失败');
+                              return;
+                            } else {
+                              ticketIds.add(ticketId2);
                             }
                           }
                           if (ticketIds.isNotEmpty) {
@@ -415,6 +515,21 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
   Widget buildSeatChoose() {
     trainPriceList.sort((p1, p2) => p2.price.compareTo(p1.price));
     List<Widget> widgets = [];
+    widgets.add(Container(
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.deepOrange,
+        borderRadius: BorderRadius.all(Radius.circular(4)),
+      ),
+      height: 32,
+      margin: EdgeInsets.all(8),
+      padding: EdgeInsets.all(8),
+      child: Text(
+        trainPriceList[0].stationTrainCode,
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.white),
+      ),
+    ));
     for (int i = 0; i < trainPriceList.length; i++) {
       TrainPrice trainPrice = trainPriceList[i];
       num remain = 0;
@@ -464,6 +579,87 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
                       '￥${trainPrice.price}',
                       style: TextStyle(
                           color: choose == i ? Colors.white : Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ));
+    }
+    return Row(
+      children: widgets,
+    );
+  }
+
+  Widget buildSeatChoose2() {
+    trainPriceList2.sort((p1, p2) => p2.price.compareTo(p1.price));
+    List<Widget> widgets = [];
+    widgets.add(Container(
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.deepOrange,
+        borderRadius: BorderRadius.all(Radius.circular(4)),
+      ),
+      height: 32,
+      margin: EdgeInsets.all(8),
+      padding: EdgeInsets.all(8),
+      child: Text(
+        trainPriceList2[0].stationTrainCode,
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.white),
+      ),
+    ));
+    for (int i = 0; i < trainPriceList2.length; i++) {
+      TrainPrice trainPrice = trainPriceList2[i];
+      num remain = 0;
+      RemainSeat remainSeat = remainSeatList2.firstWhere(
+          (element) => element.seatTypeName == trainPrice.seatTypeName);
+      remain = remainSeat.remaining ?? 0;
+
+      widgets.add(Expanded(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 4),
+          child: GestureDetector(
+            onTap: () {
+              if (remain == 0) {
+                return;
+              } else {
+                setState(() {
+                  choose2 = i;
+                });
+              }
+            },
+            child: Material(
+              color: choose2 == i ? Colors.blue : null,
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Text(
+                      trainPrice.seatTypeName,
+                      style: TextStyle(
+                          color: choose2 == i
+                              ? Colors.white
+                              : remain == 0
+                                  ? Colors.grey
+                                  : Colors.black),
+                    ),
+                    Text(
+                      remain == 0 ? '无' : '$remain张',
+                      style: TextStyle(
+                          color: choose2 == i
+                              ? Colors.white
+                              : remain == 0
+                                  ? Colors.grey
+                                  : Colors.black),
+                    ),
+                    Text(
+                      '￥${trainPrice.price}',
+                      style: TextStyle(
+                          color: choose2 == i ? Colors.white : Colors.grey),
                     ),
                   ],
                 ),
