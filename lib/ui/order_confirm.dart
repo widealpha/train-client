@@ -497,7 +497,7 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
     }
     for (TrainStation station in train.trainStations!) {
       if (station.stationTelecode == train.nowStartStationTelecode) {
-        return station.startTime;
+        return station.startTime.substring(0,5);
       }
     }
     return '---';
@@ -509,7 +509,7 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
     }
     for (TrainStation station in train.trainStations!) {
       if (station.stationTelecode == train.nowEndStationTelecode) {
-        return station.arriveTime;
+        return station.arriveTime.substring(0,5);
       }
     }
     return '---';

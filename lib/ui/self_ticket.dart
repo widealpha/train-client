@@ -10,6 +10,7 @@ import 'package:train/bean/seat_type.dart';
 import 'package:train/bean/ticket.dart';
 import 'package:train/bean/train.dart';
 import 'package:train/ui/pay_order.dart';
+import 'package:train/ui/search_train_only.dart';
 import 'package:train/util/date_util.dart';
 
 import 'change_train.dart';
@@ -76,7 +77,7 @@ class _SelfTicketPageState extends State<SelfTicketPage> {
                         ),
                         Padding(padding: EdgeInsets.all(2)),
                         Text(
-                          t.startTime!,
+                          t.startTime!.substring(0, 16),
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
@@ -86,16 +87,23 @@ class _SelfTicketPageState extends State<SelfTicketPage> {
                   Expanded(
                       child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.credit_card_rounded,
-                            color: Colors.blue,
-                          ),
-                          Text('   ' + t.stationTrainCode!),
-                        ],
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(() => SearchTrainOnly(
+                                stationTrainCode: t.stationTrainCode!,
+                              ));
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.credit_card_rounded,
+                              color: Colors.blue,
+                            ),
+                            Text('   ' + t.stationTrainCode!),
+                          ],
+                        ),
                       ),
                       SizedBox(
                           width: 200,
@@ -118,7 +126,7 @@ class _SelfTicketPageState extends State<SelfTicketPage> {
                         ),
                         Padding(padding: EdgeInsets.all(2)),
                         Text(
-                          t.endTime!,
+                          t.endTime!.substring(0, 16),
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
@@ -158,29 +166,32 @@ class _SelfTicketPageState extends State<SelfTicketPage> {
                             style: TextButton.styleFrom(
                                 primary: Colors.white,
                                 backgroundColor: Colors.redAccent),
-                            onPressed: canChange ?  () {
-                              Get.dialog(AlertDialog(
-                                title: Text('温馨提醒'),
-                                content: Text('确认退订订单吗?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Get.back();
-                                    },
-                                    child: Text('取消'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      await TicketApi.cancelTicket(t.ticketId!);
-                                      fetchData();
-                                      Get.back();
-                                      Get.back();
-                                    },
-                                    child: Text('确定'),
-                                  ),
-                                ],
-                              ));
-                            } : null,
+                            onPressed: canChange
+                                ? () {
+                                    Get.dialog(AlertDialog(
+                                      title: Text('温馨提醒'),
+                                      content: Text('确认退订订单吗?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Get.back();
+                                          },
+                                          child: Text('取消'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            await TicketApi.cancelTicket(
+                                                t.ticketId!);
+                                            fetchData();
+                                            Get.back();
+                                            Get.back();
+                                          },
+                                          child: Text('确定'),
+                                        ),
+                                      ],
+                                    ));
+                                  }
+                                : null,
                             child: Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 8),
@@ -196,48 +207,52 @@ class _SelfTicketPageState extends State<SelfTicketPage> {
                             style: TextButton.styleFrom(
                                 primary: Colors.white,
                                 backgroundColor: Colors.blue),
-                            onPressed: canChange ? () async {
-                              Train? train = await Get.to(
-                                  () => ChangeTrainPage(ticket: t));
-                              if (train != null) {
-                                Get.dialog(AlertDialog(
-                                  title: Text('温馨提醒'),
-                                  content: Text(
-                                      '确认从 ${t.stationTrainCode} 改签到 ${train.stationTrainCode} 吗'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Get.back();
-                                      },
-                                      child: Text('取消'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        Order? order =
-                                            await TicketApi.changeTicket(
-                                                t.ticketId!,
-                                                train.stationTrainCode!);
-                                        if (order == null) {
-                                          BotToast.showText(text: '改签失败');
-                                        } else {
-                                          if (order.price! > 0) {
-                                            await Get.to(() =>
-                                                PayOrderPage(order: order));
-                                          } else {
-                                            BotToast.showText(text: '改签成功');
-                                          }
-                                          fetchData();
-                                          Get.back();
-                                          Get.back();
-                                        }
-                                      },
-                                      child: Text('确定'),
-                                    ),
-                                  ],
-                                ));
-                              }
-                              fetchData();
-                            } : null,
+                            onPressed: canChange
+                                ? () async {
+                                    Train? train = await Get.to(
+                                        () => ChangeTrainPage(ticket: t));
+                                    if (train != null) {
+                                      Get.dialog(AlertDialog(
+                                        title: Text('温馨提醒'),
+                                        content: Text(
+                                            '确认从 ${t.stationTrainCode} 改签到 ${train.stationTrainCode} 吗'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Get.back();
+                                            },
+                                            child: Text('取消'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              Order? order =
+                                                  await TicketApi.changeTicket(
+                                                      t.ticketId!,
+                                                      train.stationTrainCode!);
+                                              if (order == null) {
+                                                BotToast.showText(text: '改签失败');
+                                              } else {
+                                                if (order.price! > 0) {
+                                                  await Get.to(() =>
+                                                      PayOrderPage(
+                                                          order: order));
+                                                } else {
+                                                  BotToast.showText(
+                                                      text: '改签成功');
+                                                }
+                                                fetchData();
+                                                Get.back();
+                                                Get.back();
+                                              }
+                                            },
+                                            child: Text('确定'),
+                                          ),
+                                        ],
+                                      ));
+                                    }
+                                    fetchData();
+                                  }
+                                : null,
                             child: Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 8),
@@ -261,7 +276,7 @@ class _SelfTicketPageState extends State<SelfTicketPage> {
     loading = true;
     setState(() {});
     tickets = await TicketApi.allSelfTicket();
-    tickets.sort((a,b) => b.startTime!.compareTo(a.startTime!));
+    tickets.sort((a, b) => b.startTime!.compareTo(a.startTime!));
     for (Ticket ticket in tickets) {
       ticket.startStation =
           StationApi.cachedStationInfo(ticket.startStationTelecode!);

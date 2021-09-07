@@ -7,6 +7,7 @@ import 'package:train/bean/passenger.dart';
 import 'package:train/bean/seat_type.dart';
 import 'package:train/bean/ticket.dart';
 import 'package:train/ui/pay_order.dart';
+import 'package:train/ui/search_train_only.dart';
 import 'package:train/util/date_util.dart';
 
 class NeedToPayPage extends StatefulWidget {
@@ -58,9 +59,8 @@ class _NeedToPayPageState extends State<NeedToPayPage> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         '订单${i + 1} ',
-                        style: TextStyle(
-                            color: Colors.deepOrange,
-                            fontSize: 24),
+                        style:
+                            TextStyle(color: Colors.deepOrange, fontSize: 24),
                       ),
                     ),
                     Expanded(
@@ -68,102 +68,103 @@ class _NeedToPayPageState extends State<NeedToPayPage> {
                     )
                   ],
                 ),
-                canPay(orders[i])?
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Center(
-                            child: TextButton(
-                                style: TextButton.styleFrom(
-                                    primary: Colors.white,
-                                    backgroundColor: Colors.redAccent),
-                                onPressed: () {
-                                  Get.dialog(AlertDialog(
-                                    title: Text('温馨提醒'),
-                                    content: Text('确认退订订单吗?'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Get.back();
-                                        },
-                                        child: Text('取消'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          await OrderFormApi.cancelOrderForm(
-                                              orders[i].orderId!);
-                                          fetchData();
-                                          Get.back();
-                                        },
-                                        child: Text('确定'),
-                                      ),
-                                    ],
-                                  ));
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 8),
-                                  child: Text(
-                                    '退订订单',
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                ))),
-                      ),
-                      Expanded(
-                        child: Center(
-                            child: TextButton(
-                                style: TextButton.styleFrom(
-                                    primary: Colors.white,
-                                    backgroundColor: Colors.blue),
-                                onPressed: () async {
-                                  await Get.to(
-                                      () => PayOrderPage(order: orders[i]));
-                                  fetchData();
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 8),
-                                  child: Text(
-                                    '支付订单',
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                ))),
-                      ),
-                    ],
-                  ),
-                ):Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Container(),
-                      ),
-                      Expanded(
-                        child: Center(
-                            child: TextButton(
-                                style: TextButton.styleFrom(
-                                    primary: Colors.white,
-                                    backgroundColor: Colors.grey),
-                                onPressed: () async {
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 8),
-                                  child: Text(
-                                    '订单已超时取消',
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                ))),
-                      ),
-                    ],
-                  ),
-                )
+                canPay(orders[i])
+                    ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Center(
+                                  child: TextButton(
+                                      style: TextButton.styleFrom(
+                                          primary: Colors.white,
+                                          backgroundColor: Colors.redAccent),
+                                      onPressed: () {
+                                        Get.dialog(AlertDialog(
+                                          title: Text('温馨提醒'),
+                                          content: Text('确认退订订单吗?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Get.back();
+                                              },
+                                              child: Text('取消'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () async {
+                                                await OrderFormApi
+                                                    .cancelOrderForm(
+                                                        orders[i].orderId!);
+                                                fetchData();
+                                                Get.back();
+                                              },
+                                              child: Text('确定'),
+                                            ),
+                                          ],
+                                        ));
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 8),
+                                        child: Text(
+                                          '退订订单',
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                      ))),
+                            ),
+                            Expanded(
+                              child: Center(
+                                  child: TextButton(
+                                      style: TextButton.styleFrom(
+                                          primary: Colors.white,
+                                          backgroundColor: Colors.blue),
+                                      onPressed: () async {
+                                        await Get.to(() =>
+                                            PayOrderPage(order: orders[i]));
+                                        fetchData();
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 8),
+                                        child: Text(
+                                          '支付订单',
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                      ))),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Container(),
+                            ),
+                            Expanded(
+                              child: Center(
+                                  child: TextButton(
+                                      style: TextButton.styleFrom(
+                                          primary: Colors.white,
+                                          backgroundColor: Colors.grey),
+                                      onPressed: () async {},
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 8),
+                                        child: Text(
+                                          '订单已超时取消',
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                      ))),
+                            ),
+                          ],
+                        ),
+                      )
               ],
             ),
           );
@@ -180,14 +181,14 @@ class _NeedToPayPageState extends State<NeedToPayPage> {
     List<Order> l = await OrderFormApi.allMyOrders();
     orders.clear();
     orders.addAll(l.where((o) => o.payed == 0));
-    orders.sort((a,b)=>b.time!.compareTo(a.time!));
+    orders.sort((a, b) => b.time!.compareTo(a.time!));
     loading = false;
     setState(() {});
   }
 
-  bool canPay(Order order){
+  bool canPay(Order order) {
     DateTime time = DateTime.parse(order.time!);
-    if (time.add(Duration(minutes: 30)).isBefore(DateTime.now())){
+    if (time.add(Duration(minutes: 30)).isBefore(DateTime.now())) {
       return false;
     }
     return true;
@@ -244,7 +245,7 @@ class _OrderCardState extends State<OrderCard> {
                         ),
                         Padding(padding: EdgeInsets.all(2)),
                         Text(
-                          t.startTime!,
+                          t.startTime!.substring(0, 16),
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
@@ -254,16 +255,23 @@ class _OrderCardState extends State<OrderCard> {
                   Expanded(
                       child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.credit_card_rounded,
-                            color: Colors.blue,
-                          ),
-                          Text('   ' + t.stationTrainCode!),
-                        ],
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(() => SearchTrainOnly(
+                                stationTrainCode: t.stationTrainCode!,
+                              ));
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.credit_card_rounded,
+                              color: Colors.blue,
+                            ),
+                            Text('   ' + t.stationTrainCode!),
+                          ],
+                        ),
                       ),
                       SizedBox(
                           width: 200,
@@ -286,7 +294,7 @@ class _OrderCardState extends State<OrderCard> {
                         ),
                         Padding(padding: EdgeInsets.all(2)),
                         Text(
-                          t.endTime!,
+                          t.endTime!.substring(0, 16),
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),

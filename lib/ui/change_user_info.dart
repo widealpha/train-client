@@ -75,6 +75,8 @@ class _ChangeUserInfoPageState extends State<ChangeUserInfoPage> {
                     UserApi.userInfo.headImage = s;
                     userInfo.headImage = s;
                     UserApi.updateUserInfo(userInfo);
+                    clearMemoryImageCache();
+                    await clearDiskCachedImages();
                     Get.appUpdate();
                   }
                 }

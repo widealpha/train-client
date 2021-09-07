@@ -702,7 +702,7 @@ class _TrainCardState extends State<TrainCard> {
                   : Colors.black),
         ),
         Text(
-          trainStations[i].arriveTime ?? '---',
+          trainStations[i].arriveTime ?? '-----',
           style: TextStyle(
               color: (trainStations[i].stationTelecode ==
                           train.nowStartStationTelecode ||
@@ -712,7 +712,7 @@ class _TrainCardState extends State<TrainCard> {
                   : Colors.black),
         ),
         Text(
-          trainStations[i].startTime ?? '---',
+          trainStations[i].startTime ?? '-----',
           style: TextStyle(
               color: (trainStations[i].stationTelecode ==
                           train.nowStartStationTelecode ||
@@ -725,7 +725,7 @@ class _TrainCardState extends State<TrainCard> {
           (trainStations[i].arriveTime == null ||
                   trainStations[i].startTime == null ||
                   trainStations[i].startTime == trainStations[i].arriveTime)
-              ? '---'
+              ? '-----'
               : DateUtil.timeInterval(
                       trainStations[i].startTime, trainStations[i].arriveTime)
                   .substring(3),
@@ -836,32 +836,32 @@ class _TrainCardState extends State<TrainCard> {
 
   String getStationName(String? telecode) {
     if (telecode == null) {
-      return '---';
+      return '-----';
     }
-    return StationApi.cachedStationInfo(telecode)?.name ?? '---';
+    return StationApi.cachedStationInfo(telecode)?.name ?? '-----';
   }
 
   String getTrainStartTime(Train train) {
     if (train.trainStations == null) {
-      return '---';
+      return '-----';
     }
     for (TrainStation station in train.trainStations!) {
       if (station.stationTelecode == train.nowStartStationTelecode) {
-        return station.startTime;
+        return station.startTime.substring(0,5);
       }
     }
-    return '---';
+    return '-----';
   }
 
   String getTrainArriveTime(Train train) {
     if (train.trainStations == null) {
-      return '---';
+      return '-----';
     }
     for (TrainStation station in train.trainStations!) {
       if (station.stationTelecode == train.nowEndStationTelecode) {
-        return station.arriveTime;
+        return station.arriveTime.substring(0,5);
       }
     }
-    return '---';
+    return '-----';
   }
 }

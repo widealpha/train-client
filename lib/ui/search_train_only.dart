@@ -45,8 +45,9 @@ class _SearchTrainOnlyState extends State<SearchTrainOnly> {
                     style: TextStyle(color: Colors.grey),
                   ),
                 )
-              : Card(
-                  child: ExpandablePanel(
+              : SingleChildScrollView(
+                  child: Card(
+                      child: ExpandablePanel(
                     controller: _expandableController,
                     theme: const ExpandableThemeData(
                         headerAlignment: ExpandablePanelHeaderAlignment.center,
@@ -155,7 +156,7 @@ class _SearchTrainOnlyState extends State<SearchTrainOnly> {
                       );
                     },
                     collapsed: Container(),
-                  ),
+                  )),
                 ),
     );
   }
@@ -187,16 +188,16 @@ class _SearchTrainOnlyState extends State<SearchTrainOnly> {
         Text(
           t.arriveTime == null
               ? '---'
-              : t.arriveTime +
-                  '${t.updateArriveTime != null ? '(晚点:${t.updateArriveTime})' : ''}' +
+              : t.arriveTime.substring(0, 5) +
+                  '${t.updateArriveTime != null ? '(晚点:${t.updateArriveTime.substring(0, 5)})' : ''}' +
                   '${t.arriveDayDiff == 0 ? '' : '  +${t.arriveDayDiff}天'}',
           style: TextStyle(color: Colors.black),
         ),
         Text(
           t.startTime == null
               ? '---'
-              : t.startTime +
-                  '${t.updateStartTime != null ? ' (晚点:${t.updateStartTime}) ' : ''}' +
+              : t.startTime.substring(0, 5) +
+                  '${t.updateStartTime != null ? ' (晚点:${t.updateStartTime.substring(0, 5)}) ' : ''}' +
                   '${t.startDayDiff == 0 ? '' : '  +${t.startDayDiff}天'}',
           style: TextStyle(color: Colors.black),
         ),

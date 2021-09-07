@@ -33,7 +33,6 @@ class _PayOrderPageState extends State<PayOrderPage> {
   Timer? _timer;
   bool loading = true;
 
-
   @override
   void initState() {
     super.initState();
@@ -127,7 +126,7 @@ class _PayOrderPageState extends State<PayOrderPage> {
                                     ),
                                     Padding(padding: EdgeInsets.all(2)),
                                     Text(
-                                      ticket.startTime!,
+                                      ticket.startTime!.substring(0, 16),
                                       style: TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold),
@@ -172,7 +171,7 @@ class _PayOrderPageState extends State<PayOrderPage> {
                                     ),
                                     Padding(padding: EdgeInsets.all(2)),
                                     Text(
-                                      ticket.endTime!,
+                                      ticket.endTime!.substring(0, 16),
                                       style: TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold),
@@ -191,12 +190,11 @@ class _PayOrderPageState extends State<PayOrderPage> {
                                 child: Container(),
                               ),
                               Container(
-                                child: Text(
-                                    '${passengerMap[ticket]!.name}'
-                                        '  (${passengerMap[ticket]!.student! ? '学生' : '成人'}票)'
-                                        ' ${seatTypeCodeToName[coachMap[ticket]!.seatTypeCode]}'
-                                        ' ${coachMap[ticket]!.coachNo}车'
-                                        ' ${seatMap[ticket]}号                      '),
+                                child: Text('${passengerMap[ticket]!.name}'
+                                    '  (${passengerMap[ticket]!.student! ? '学生' : '成人'}票)'
+                                    ' ${seatTypeCodeToName[coachMap[ticket]!.seatTypeCode]}'
+                                    ' ${coachMap[ticket]!.coachNo}车'
+                                    ' ${seatMap[ticket]}号                      '),
                               )
                             ],
                           ),
@@ -287,10 +285,10 @@ class _PayOrderPageState extends State<PayOrderPage> {
           StationApi.cachedStationInfo(ticket.endStationTelecode!);
       coachMap[ticket] = (await CoachApi.coachInfo(ticket.coachId!))!;
       seatMap[ticket] =
-          await TicketApi.transferSeatBigInteger(bigInteger:'${ticket.seat}');
+          await TicketApi.transferSeatBigInteger(bigInteger: '${ticket.seat}');
       List<Passenger> passengers = await PassengerApi.allMyPassengers();
       passengers.forEach((element) {
-        if (element.passengerId == ticket.passengerId){
+        if (element.passengerId == ticket.passengerId) {
           passengerMap[ticket] = element;
         }
       });
