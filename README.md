@@ -3,8 +3,14 @@
 火车票售票系统(模拟12306).
 
 ## Getting Started 安装flutter
-按照flutter官方教程安装flutter框架
-https://flutter.dev/docs/get-started/install
+1. 按照flutter官方教程安装flutter框架 https://flutter.dev/docs/get-started/install
+2. 更改api.dart文件中的全局变量host(默认127.0.0.1:8080)为目前运行train-server的ip地址和端口
+3. 确保train-server已经启动成功
+4. 启动已经打好的release包,或执行flutter build重新打包(部分地方用到了dart.io包,排除后即可运行在网页端)
+
+## 用到dart.io的位置
+1. 上传头像 change_user_info.dart
+2. constant.dart
 
 ## 运行平台代码
 需要在项目文件夹下执行
@@ -25,6 +31,3 @@ https://flutter.dev/docs/get-started/install
 ![image](https://user-images.githubusercontent.com/57834237/132506693-a8bf3b79-295e-4c66-88a6-5ea1893c13a3.png)
 ![image](https://user-images.githubusercontent.com/57834237/132506752-a0183c89-455d-4982-b722-3c98fc8b0ada.png)
 ![image](https://user-images.githubusercontent.com/57834237/132506790-a1c630bb-04e0-4e90-b514-346f076aec7e.png)
-
-
-
