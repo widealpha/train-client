@@ -40,7 +40,7 @@ class UserApi {
   static String _login = host + '/user/login';
   static String _register = host + '/user/register';
   static String _userInfo = host + '/userInfo/myInfo';
-  static String _uploadImage = host + '/userInfo/uploadImage';
+  static String _uploadImage = 'https://widealpha.top:8443/train/userInfo/uploadImage';
   static String _updateInfo = host + '/userInfo/updateInfo';
 
   static bool get isLogin => HiveUtils.get('token') != null;

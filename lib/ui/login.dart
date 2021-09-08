@@ -5,6 +5,7 @@ import 'package:flutter_login/flutter_login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:train/api/api.dart';
+import 'package:train/ui/main_page.dart';
 import 'package:train/util/constance.dart';
 
 class LoginPage extends StatelessWidget {
@@ -16,7 +17,7 @@ class LoginPage extends StatelessWidget {
     String s = await UserApi.login(data.name, data.password);
     if (s == '登录成功') {
       BotToast.showText(text: '登录成功');
-      Get.back();
+      Get.offAll(() => MainPage());
       return null;
     }
     return s;

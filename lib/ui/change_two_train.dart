@@ -437,10 +437,10 @@ class _ChangeTwoTrainPageState extends State<ChangeTwoTrainPage> {
 
     if (onlyHighWay) {
       list.removeWhere((element) =>
-          element.firstTrain.trainClassCode != 'D' &&
-          element.firstTrain.trainClassCode != '8' &&
-          element.lastTrain.trainClassCode != 'D' &&
-          element.lastTrain.trainClassCode != '8');
+          !element.firstTrain.stationTrainCode!.startsWith('D') &&
+          !element.firstTrain.stationTrainCode!.startsWith('8') &&
+          !element.lastTrain.stationTrainCode!.startsWith('D') &&
+          !element.lastTrain.stationTrainCode!.startsWith('8'));
     }
 
     return list;
@@ -571,7 +571,8 @@ class _ChangeTwoTrainCardState extends State<ChangeTwoTrainCard> {
                           ),
                           Text(
                               '${train.firstTrain.startStartTime!.substring(0, 5)}-${train.firstTrainArriveTime.substring(0, 5)}',
-                              style: TextStyle(fontSize: 12, color: Colors.blue))
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.blue))
                         ],
                       ),
                       width: 80,
@@ -582,8 +583,10 @@ class _ChangeTwoTrainCardState extends State<ChangeTwoTrainCard> {
                       alignment: Alignment.center,
                       child: Column(
                         children: [
-                          Text('${train.interval ~/ 60}时${train.interval % 60}分',
-                              style: TextStyle(fontSize: 12, color: Colors.blue)),
+                          Text(
+                              '${train.interval ~/ 60}时${train.interval % 60}分',
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.blue)),
                           Text(getStationName(train.changeStation),
                               style: TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.bold))
@@ -605,7 +608,8 @@ class _ChangeTwoTrainCardState extends State<ChangeTwoTrainCard> {
                           ),
                           Text(
                               '${train.lastTrainStartTime.substring(0, 5)}-${train.lastTrain.endArriveTime!.substring(0, 5)}',
-                              style: TextStyle(fontSize: 12, color: Colors.blue))
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.blue))
                         ],
                       ),
                       width: 80,
@@ -615,7 +619,8 @@ class _ChangeTwoTrainCardState extends State<ChangeTwoTrainCard> {
                     child: Container(
                       alignment: Alignment.center,
                       child: Text(
-                          getStationName(train.lastTrain.nowEndStationTelecode!),
+                          getStationName(
+                              train.lastTrain.nowEndStationTelecode!),
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold)),
                       width: 80,
@@ -648,15 +653,15 @@ class _ChangeTwoTrainCardState extends State<ChangeTwoTrainCard> {
                     BotToast.showText(text: '数据已过期');
                   } else {
                     Get.to(() => OrderConfirmTwoPage(
-                      remainSeatList: l1,
-                      trainPriceList: l2,
-                      remainSeatList2: l3,
-                      trainPriceList2: l4,
-                      date: widget.date,
-                      ticket: ticket,
-                      train: train.firstTrain,
-                      train2: train.lastTrain,
-                    ));
+                          remainSeatList: l1,
+                          trainPriceList: l2,
+                          remainSeatList2: l3,
+                          trainPriceList2: l4,
+                          date: widget.date,
+                          ticket: ticket,
+                          train: train.firstTrain,
+                          train2: train.lastTrain,
+                        ));
                   }
                 },
                 loadingWidget: Dialog(

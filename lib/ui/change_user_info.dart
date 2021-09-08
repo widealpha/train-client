@@ -17,13 +17,13 @@ class ChangeUserInfoPage extends StatefulWidget {
 class _ChangeUserInfoPageState extends State<ChangeUserInfoPage> {
   UserInfo userInfo = UserApi.userInfo;
   TextEditingController _nameController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
+  TextEditingController _idCardController = TextEditingController();
   TextEditingController _nicknameController = TextEditingController();
   TextEditingController _mailsController = TextEditingController();
   TextEditingController _typeController = TextEditingController(text: '男');
   TextEditingController _phoneController = TextEditingController();
   String? _nameError;
-  String? _addressError;
+  String? _idError;
   String? _nicknameError;
   String? _mailError;
   String? _phoneError;
@@ -32,7 +32,7 @@ class _ChangeUserInfoPageState extends State<ChangeUserInfoPage> {
   void initState() {
     UserApi.userInfoDetail().then((info) {
       _nameController.text = info.realName ?? _nameController.text;
-      _addressController.text = info.address ?? _addressController.text;
+      _idCardController.text = info.idCardNo ?? _idCardController.text;
       _mailsController.text = info.mail ?? _mailsController.text;
       _phoneController.text = info.phone ?? _phoneController.text;
       _typeController.text = (info.gender ?? 0) == 0 ? '男' : '女';
@@ -74,7 +74,9 @@ class _ChangeUserInfoPageState extends State<ChangeUserInfoPage> {
                   if (s.isNotEmpty){
                     UserApi.userInfo.headImage = s;
                     userInfo.headImage = s;
-                    UserApi.updateUserInfo(userInfo);
+                    await UserApi.updateUserInfo(userInfo);
+                    fetchData();
+
                     clearMemoryImageCache();
                     await clearDiskCachedImages();
                     Get.appUpdate();
@@ -106,13 +108,13 @@ class _ChangeUserInfoPageState extends State<ChangeUserInfoPage> {
                     child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
-                    controller: _addressController,
+                    controller: _idCardController,
                     decoration: InputDecoration(
                         icon: Icon(Icons.credit_card_outlined),
                         border: OutlineInputBorder(),
-                        hintText: '请输入个人地址',
-                        labelText: '地址',
-                        errorText: _addressError),
+                        hintText: '请输入个人身份证号',
+                        labelText: '身份证号',
+                        errorText: _idError),
                   ),
                 )),
               ],
@@ -203,15 +205,21 @@ class _ChangeUserInfoPageState extends State<ChangeUserInfoPage> {
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   child: Text('确认', style: TextStyle(fontSize: 18))),
               onPressed: () async {
-                String address = _addressController.text;
-                if (address.isEmpty) {
-                  _addressError = '地址不能为空'; // 位数不够
+                String id = _idCardController.text;
+                if (id.length != 18) {
+                  _idError = '请检查证件号格式'; // 位数不够
                   setState(() {});
                   return;
                 }
-
+                RegExp exp = new RegExp(
+                    r'^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|[Xx])$');
+                if (!exp.hasMatch(id)) {
+                  _idError = '请检查证件号格式';
+                  setState(() {});
+                  return;
+                }
                 String phone = _phoneController.text;
-                var exp = RegExp(
+                exp = RegExp(
                     r'^((13[0-9])|(14[0-9])|(15[0-9])|(16[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))\d{8}$');
                 if (!exp.hasMatch(phone)) {
                   _phoneError = '请检查手机号格式';
@@ -233,8 +241,8 @@ class _ChangeUserInfoPageState extends State<ChangeUserInfoPage> {
                 if (_phoneController.text.isNotEmpty) {
                   userInfo.phone = _phoneController.text;
                 }
-                if (_addressController.text.isNotEmpty) {
-                  userInfo.address = _addressController.text;
+                if (_idCardController.text.isNotEmpty) {
+                  userInfo.idCardNo = _idCardController.text;
                 }
                 if (_nicknameController.text.isNotEmpty) {
                   userInfo.nickname = _nicknameController.text;
@@ -248,5 +256,19 @@ class _ChangeUserInfoPageState extends State<ChangeUserInfoPage> {
         ],
       ),
     );
+  }
+
+  fetchData() async{
+    userInfo = await  UserApi.userInfoDetail();
+    _nameController.text = userInfo.realName ?? _nameController.text;
+    _idCardController.text = userInfo.idCardNo ?? _idCardController.text;
+    _mailsController.text = userInfo.mail ?? _mailsController.text;
+    _phoneController.text = userInfo.phone ?? _phoneController.text;
+    _typeController.text = (userInfo.gender ?? 0) == 0 ? '男' : '女';
+    _idError = null;
+    _nameError = null;
+    _mailError = null;
+    _phoneError = null;
+    setState(() {});
   }
 }

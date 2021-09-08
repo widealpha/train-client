@@ -31,7 +31,7 @@ class _TrainPageState extends State<TrainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return ListView(
       children: [
         Card(
           margin: EdgeInsets.all(12),

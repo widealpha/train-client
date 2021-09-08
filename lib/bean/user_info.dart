@@ -13,6 +13,7 @@ class UserInfo {
   String? mail;
   String? address;
   int? selfPassengerId;
+  String? idCardNo;
 
 
 
