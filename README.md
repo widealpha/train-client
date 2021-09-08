@@ -1,6 +1,6 @@
 # train
 
-火车票售票系统(模拟12306).
+火车票售票系统客户端(模拟12306).
 
 ## Getting Started 安装flutter
 1. 按照flutter官方教程安装flutter框架 https://flutter.dev/docs/get-started/install
